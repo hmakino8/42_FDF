@@ -6,7 +6,7 @@
 /*   By: hiroaki <hiroaki@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/19 13:48:09 by hmakino           #+#    #+#             */
-/*   Updated: 2022/11/25 14:39:43 by hiroaki          ###   ########.fr       */
+/*   Updated: 2022/11/25 22:52:00 by hiroaki          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,8 @@
 
 int		ft_isdigit(int c);
 int		ft_isspace(int c);
-int		ft_strcmp(const char *s1, const char *s2);
+int		ft_toupper(int c);
+int		ft_strncmp(const char *s1, const char *s2, size_t n);
 size_t	ft_strlen(const char *s);
 size_t	ft_strlcpy(char *dst, const char *src, size_t dstsize);
 char	*ft_strchr(const char *s, int c);

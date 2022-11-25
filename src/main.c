@@ -6,7 +6,7 @@
 /*   By: hiroaki <hiroaki@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/17 02:08:05 by hiroaki           #+#    #+#             */
-/*   Updated: 2022/11/25 15:52:45 by hiroaki          ###   ########.fr       */
+/*   Updated: 2022/11/25 23:45:31 by hiroaki          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ void	get_width(t_data *d, int fd, char *line)
 	d->m.width = width;
 }
 
-void	get_coord_info(t_data *d, int i)
+void	parse_line(t_data *d, int i)
 {
 	int		j;
 	bool	ok;
@@ -71,28 +71,29 @@ void	get_coord_info(t_data *d, int i)
 			d->m.color[i] = ft_atoi_base(d->m.info[1], 16, &ok);
 		if (!ok)
 			fdf_exit(d, "Invalid coord value or color code.");
-		free_all_element((void **)d->m.info, d->elemcnt);
+		printf("%d ", d->m.color[i]);
+		//free_all_element((void **)d->m.info, d->elemcnt);
 		d->m.info = NULL;
 	}
 }
 
 void	alloc_arr(t_data *d, t_map *m)
 {
-	m->allocsize = m->height * (m->width - 1);
+	m->allocsize = m->height * m->width * sizeof(int);
 	d->m.coord = (int *)malloc(m->allocsize);
 	d->m.color = (int *)malloc(m->allocsize);
 	if (!d->m.coord || !d->m.color)
 		fdf_exit(d, "Malloc failure");
 }
 
-void	get_matrix(t_data *d, char *filename)
+void	get_coord_info(t_data *d, char *filename)
 {
 	int		i;
 	int		fd;
 	int		signal;
 	char	*line;
 
-	i = -1;
+	i = 0;
 	init_fd(d, &fd, filename);
 	while (1)
 	{
@@ -105,7 +106,7 @@ void	get_matrix(t_data *d, char *filename)
 		get_width(d, fd, line);
 		if (!d->m.coord || !d->m.color)
 			alloc_arr(d, &d->m);
-		get_coord_info(d, ++i);
+		parse_line(d, i++);
 		free(line);
 		line = NULL;
 	}
@@ -114,7 +115,7 @@ void	get_matrix(t_data *d, char *filename)
 
 void	get_map(t_data *d, char *filename)
 {
-	get_matrix(d, filename);
+	get_coord_info(d, filename);
 }
 
 void	init_data(t_data *d)

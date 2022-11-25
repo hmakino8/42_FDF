@@ -6,7 +6,7 @@
 /*   By: hiroaki <hiroaki@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/10 19:08:02 by hmakino           #+#    #+#             */
-/*   Updated: 2022/11/25 14:57:48 by hiroaki          ###   ########.fr       */
+/*   Updated: 2022/11/25 21:29:15 by hiroaki          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@
 
 # define STD_OUT 1
 # define STD_ERROR 2
+# define DEFAULT_COLOR "0xEAEAEA"
 
 typedef struct s_map
 {
@@ -44,5 +45,12 @@ typedef struct	s_data
  * * * * * * * */
 
 /* main.c */
+
+/* * * * * * * *
+ *  utils dir  *
+ * * * * * * * */
+
+/* ft_atoi_base.c */
+int	ft_atoi_base(char *str, int base, bool *ok);
 
 #endif
