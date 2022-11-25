@@ -6,7 +6,7 @@
 #    By: hiroaki <hiroaki@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/11/15 03:03:24 by hiroaki           #+#    #+#              #
-#    Updated: 2022/11/22 05:11:06 by hiroaki          ###   ########.fr        #
+#    Updated: 2022/11/22 09:04:20 by hiroaki          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,7 +14,7 @@ NAME			=	fdf
 
 FLAGS			=	#-Wall -Wextra -Werror -g -fsanitize=address -fsanitize=integer -fsanitize=undefined
 
-SRCS			=	main/main.c
+SRCS			=	main.c
 
 SRCS_PATH		= 	$(addprefix src/, $(SRCS))
 OBJS_PATH		=	$(SRCS_PATH:%.c=%.o)

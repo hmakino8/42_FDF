@@ -6,7 +6,7 @@
 /*   By: hiroaki <hiroaki@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/10 19:08:02 by hmakino           #+#    #+#             */
-/*   Updated: 2022/11/22 05:06:24 by hiroaki          ###   ########.fr       */
+/*   Updated: 2022/11/25 14:57:48 by hiroaki          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,28 +22,22 @@
 # define STD_OUT 1
 # define STD_ERROR 2
 
-//enum e_signal {};
-
-//enum e_command {};
-
-typedef struct s_arr
+typedef struct s_map
 {
-	int	*init;
-	int	*sort;
-	int	*comp;
-	int	*cmds;
-}	t_arr;
+	int		width;
+	int		height;
+	int		allocsize;
+	int		*coord;
+	int		*color;
+	char	**info;
+}	t_map;
 
-typedef struct s_lst
+typedef struct	s_data
 {
-	int				val;
-	bool			part;
-	struct s_lst	*next;
-}	t_lst;
-
-typedef struct s_data
-{
-}	t_data;
+	int		elemcnt;
+	char	**elem;
+	t_map	m;
+}				t_data;
 
 /* * * * * * * *
  *   main dir  *

@@ -1,30 +1,13 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_strrchr.c                                       :+:      :+:    :+:   */
+/*   init.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hiroaki <hiroaki@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/01/22 16:37:42 by hmakino           #+#    #+#             */
-/*   Updated: 2022/11/20 03:32:55 by hiroaki          ###   ########.fr       */
+/*   Created: 2022/11/22 09:05:02 by hiroaki           #+#    #+#             */
+/*   Updated: 2022/11/23 18:05:16 by hiroaki          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../include/libft.h"
-
-char	*ft_strrchr(const char *s, int c)
-{
-	size_t	len;
-	char	ch;
-
-	ch = (char)c;
-	len = ft_strlen(s);
-	if (!ch)
-		return ((char *)&s[len]);
-	while (len--)
-	{
-		if (s[len] == ch)
-			return ((char *)&s[len]);
-	}
-	return (NULL);
-}
+#include "../include/fdf.h"
