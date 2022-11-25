@@ -6,7 +6,7 @@
 /*   By: hiroaki <hiroaki@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/17 02:08:05 by hiroaki           #+#    #+#             */
-/*   Updated: 2022/11/25 23:45:31 by hiroaki          ###   ########.fr       */
+/*   Updated: 2022/11/26 04:00:02 by hiroaki          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,8 +15,9 @@
 
 void	fdf_exit(t_data *d, char *errmsg)
 {
-	free_all_element((void **)d->m.coord, d->m.allocsize);
-	free_all_element((void **)d->m.color, d->m.allocsize);
+	free(d->m.coord);
+	free(d->m.color);
+	free(d->m.line);
 	free_all_element((void **)d->elem, d->m.width);
 	free_all_element((void **)d->m.info, d->elemcnt);
 	if (errmsg)
@@ -40,39 +41,45 @@ void	init_fd(t_data *d, int *fd, char *filename)
 		fdf_exit(d, "Failed to open file.");
 }
 
-void	get_width(t_data *d, int fd, char *line)
+void	get_coord(t_data *d, int i)
 {
-	int	width;
+	bool	ok;
 
-	d->elem = ft_split(line, ' ', &width);
-	if (!d->elem || (d->m.width && d->m.width != width))
-	{
-		d->m.width = width;
+	d->m.coord[i] = ft_atoi_base(d->m.info[0], 10, &ok);
+	if (!ok)
+		fdf_exit(d, "Invalid map coord.");
+}
+
+void	get_color_code(t_data *d, int i)
+{
+	bool	ok;
+
+	if (d->elemcnt == 1)
+		d->m.color[i] = ft_atoi_base(DEFAULT_COLOR, 16, &ok);
+	if (ok && d->elemcnt == 2)
+		d->m.color[i] = ft_atoi_base(d->m.info[1], 16, &ok);
+	if (!ok)
+		fdf_exit(d, "Invalid color code.");
+}
+
+void	get_info(t_data *d, int j)
+{
+	d->m.info = ft_split(d->elem[j], ',', &d->elemcnt);
+	if (!d->m.info || d->elemcnt > 2)
 		fdf_exit(d, "Failed to read map.");
-	}
-	d->m.width = width;
 }
 
 void	parse_line(t_data *d, int i)
 {
-	int		j;
-	bool	ok;
+	int	j;
 
 	j = -1;
 	while (d->elem[++j])
 	{
-		d->m.info = ft_split(d->elem[j], ',', &d->elemcnt);
-		if (!d->m.info || d->elemcnt > 2)
-			fdf_exit(d, "Failed to read map.");
-		d->m.coord[i] = ft_atoi_base(d->m.info[0], 10, &ok);
-		if (d->elemcnt == 1)
-			d->m.color[i] = ft_atoi_base(DEFAULT_COLOR, 16, &ok);
-		if (ok && d->elemcnt == 2)
-			d->m.color[i] = ft_atoi_base(d->m.info[1], 16, &ok);
-		if (!ok)
-			fdf_exit(d, "Invalid coord value or color code.");
-		printf("%d ", d->m.color[i]);
-		//free_all_element((void **)d->m.info, d->elemcnt);
+		get_info(d, j);
+		get_coord(d, i);
+		get_color_code(d, i);
+		free_all_element((void **)d->m.info, d->elemcnt);
 		d->m.info = NULL;
 	}
 }
@@ -86,29 +93,49 @@ void	alloc_arr(t_data *d, t_map *m)
 		fdf_exit(d, "Malloc failure");
 }
 
+void	get_width(t_data *d, int fd)
+{
+	int	width;
+
+	d->elem = ft_split(d->m.line, ' ', &width);
+	if (!d->elem || (d->m.width && d->m.width != width))
+		fdf_exit(d, "Failed to read map.");
+	d->m.width = width;
+}
+
+void	get_height(t_data *d, int fd, int *signal)
+{
+	char	*gnl;
+
+	gnl = get_next_line(fd, signal);
+	d->m.line = ft_strtrim((const char *)gnl, "\n");
+	if (*signal == END_OF_FILE)
+		return ;
+	if (!d->m.line)
+		fdf_exit(d, "Failed to read file.");
+	free(gnl);
+	d->m.height++;
+}
+
 void	get_coord_info(t_data *d, char *filename)
 {
 	int		i;
 	int		fd;
 	int		signal;
-	char	*line;
 
 	i = 0;
 	init_fd(d, &fd, filename);
 	while (1)
 	{
-		line = get_next_line(fd, &signal);
-		if (!line && signal == END_OF_FILE)
+		get_height(d, fd, &signal);
+		if (signal == END_OF_FILE)
 			break ;
-		else if (!line)
-			fdf_exit(d, "Failed to read file.");
-		d->m.height++;
-		get_width(d, fd, line);
-		if (!d->m.coord || !d->m.color)
+		get_width(d, fd);
+		if (d->m.height == 1)
 			alloc_arr(d, &d->m);
 		parse_line(d, i++);
-		free(line);
-		line = NULL;
+		free(d->m.line);
+		d->m.line = NULL;
 	}
 	close(fd);
 }
@@ -124,6 +151,7 @@ void	init_data(t_data *d)
 	d->m.height = 0;
 	d->elemcnt = 0;
 	d->elem = NULL;
+	d->m.line = NULL;
 	d->m.coord = NULL;
 	d->m.color = NULL;
 	d->m.info = NULL;

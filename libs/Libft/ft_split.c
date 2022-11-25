@@ -6,7 +6,7 @@
 /*   By: hiroaki <hiroaki@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/02 17:30:41 by hiroaki           #+#    #+#             */
-/*   Updated: 2022/11/25 15:29:28 by hiroaki          ###   ########.fr       */
+/*   Updated: 2022/11/26 02:59:11 by hiroaki          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ void	free_all_element(void **v, int cnt)
 	int	i;
 
 	i = -1;
-	while (++i < cnt)
+	while (v && ++i < cnt)
 	{
 		free(v[i]);
 		v[i] = NULL;
@@ -66,25 +66,6 @@ static void	element_cpy(char *s, char **split, char c, int cnt)
 	}
 }
 
-//#include <stdio.h>
-//
-//static char	**ret_duplicate(char **split, char *s, int *cnt)
-//{
-//	*cnt = 1;
-//	split = (char **)malloc(2 * sizeof(char *));
-//	if (!split)
-//		return (NULL);
-//	split[0] = ft_strdup(s);
-//	if (!split[0])
-//	{
-//		free_all_element((void **)split, 2);
-//		return (NULL);
-//	}
-//	//printf("%s\n", split[0]);
-//	split[1] = NULL;
-//	return (split);
-//}
-
 char	**ft_split(char *s, char c, int *cnt)
 {
 	char	**split;
@@ -93,8 +74,6 @@ char	**ft_split(char *s, char c, int *cnt)
 	if (!s)
 		return (NULL);
 	*cnt = element_cnt(s, c);
-	//if (!*cnt)
-	//	return (ret_duplicate(split, s, cnt));
 	split = (char **)malloc((*cnt + 1) * sizeof(char *));
 	if (!split)
 		return (NULL);

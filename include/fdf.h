@@ -6,7 +6,7 @@
 /*   By: hiroaki <hiroaki@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/10 19:08:02 by hmakino           #+#    #+#             */
-/*   Updated: 2022/11/25 21:29:15 by hiroaki          ###   ########.fr       */
+/*   Updated: 2022/11/26 01:52:54 by hiroaki          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,7 @@ typedef struct s_map
 	int		allocsize;
 	int		*coord;
 	int		*color;
+	char	*line;
 	char	**info;
 }	t_map;
 

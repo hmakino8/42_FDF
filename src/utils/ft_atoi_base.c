@@ -6,11 +6,12 @@
 /*   By: hiroaki <hiroaki@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/01 23:44:45 by hiroaki           #+#    #+#             */
-/*   Updated: 2022/11/25 23:48:04 by hiroaki          ###   ########.fr       */
+/*   Updated: 2022/11/26 03:59:16 by hiroaki          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/fdf.h"
+#include <stdio.h>
 
 static bool	is_overflow(unsigned long num, int sign)
 {
@@ -41,15 +42,17 @@ static int	conv_decimal_digit(char c, int base)
 	if (!digits)
 		return (-1);
 	d = -1;
-	while (++d <= base)
+	while (digits[++d])
 	{
 		if (digits[d] == c)
 			break ;
+		if (!digits[d])
+		{
+			free((void *)digits);
+			return (-1);
+		}
 	}
 	free((void *)digits);
-	digits = NULL;
-	if (d == base)
-		return (-1);
 	return (d);
 }
 

@@ -6,7 +6,7 @@
 #    By: hiroaki <hiroaki@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/02/06 17:10:58 by hiroaki           #+#    #+#              #
-#    Updated: 2022/11/25 22:54:20 by hiroaki          ###   ########.fr        #
+#    Updated: 2022/11/26 01:08:38 by hiroaki          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -19,6 +19,8 @@ SRCS			=	ft_isdigit.c \
 					ft_strlcpy.c \
 					ft_strlen.c \
 					ft_strchr.c \
+					ft_strrchr.c \
+					ft_strtrim.c \
 					ft_strdup.c \
 					ft_substr.c \
 					ft_split.c \
