@@ -6,7 +6,7 @@
 /*   By: hiroaki <hiroaki@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/17 02:08:05 by hiroaki           #+#    #+#             */
-/*   Updated: 2022/11/28 00:09:35 by hiroaki          ###   ########.fr       */
+/*   Updated: 2022/11/28 01:24:59 by hiroaki          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -200,12 +200,21 @@ void	get_matrix(t_data *d, char *filename)
 //	return (diff);
 //}
 //
-//int	ft_max(double a, double b)
-//{
-//	if (a < b)
-//		return (b);
-//	return (a);
-//}
+
+int	ft_max(int a, int b)
+{
+	if (a < b)
+		return (b);
+	return (a);
+}
+
+int	ft_min(int a, int b)
+{
+	if (a < b)
+		return (a);
+	return (b);
+}
+
 //
 //void	isometric(double *x, double *y, int z)
 //{
@@ -309,59 +318,85 @@ void	get_matrix(t_data *d, char *filename)
 //	return (0);
 //}
 //
-//void	draw_bkg(t_mlx *mx)
-//{
-//	int	i;
-//	int	j;
-//	int	*img;
-//
-//	ft_bzero(mx->data_addr, WIDTH * HEIGHT * mx->bpp / 8);
-//	img = (int *)mx->data_addr;
-//	i = -1;
-//	while (++i < HEIGHT * WIDTH)
-//	{
-//		j = i % WIDTH;
-//		if (j < MENU_WIDTH)
-//			img[j] = MENU_COLOR;
-//		else
-//			img[j] = BKG_COLOR;
-//	}
-//}
-//
-//void	fdf_rendering(t_data *d, t_map *m, t_mlx *mx)
-//{
-//	double	x;
-//	double	y;
-//
-//	//draw_bkg(mx);
-//	y = 0;
-//	while (y < m->height)
-//	{
-//		x = 0;
-//		while (x < m->width)
-//		{
-//			if (x < m->width - 1)
-//				bresenham_algo(d, x, y, x + 1, y);
-//			if (y < m->height - 1)
-//				bresenham_algo(d, x, y, x, y + 1);
-//			x++;
-//		}
-//		y++;
-//	}
-//	//mlx_put_image_to_window(mx->init, mx->win, mx->img, 0, 0);
-//}
-//
-//void	draw_map(t_data *d, t_mlx *mlx)
-//{
-//	mlx->init = mlx_init();
-//	mlx->win = mlx_new_window(mlx->init, SCR_WIDTH, SCR_HEIGHT, "FdF");
-//	mlx->img = mlx_new_image(mlx->init, SCR_WIDTH, SCR_HEIGHT);
-//	mlx->data_addr = mlx_get_data_addr(mlx->img, &mlx->bpp, &mlx->size_line, & mlx->endian);
-//	put_pixel(mlx, )
-//	fdf_rendering(d, &d->m, mlx);
-//	//mlx_key_hook(d->mx.win_ptr, deal_key, NULL);
-//	mlx_loop(mlx->init);
-//}
+void	draw_bkg(t_mlx *mx)
+{
+	int	i;
+	int	j;
+	int	size;
+	int	*img;
+
+	size = SCR_WIDTH * SCR_HEIGHT * mx->bpp / 8;
+	ft_bzero(mx->data_addr, size);
+	img = (int *)mx->data_addr;
+	i = -1;
+	while (++i < SCR_WIDTH * SCR_HEIGHT)
+	{
+		j = i % SCR_WIDTH;
+		if (j < MENU_WIDTH)
+			img[i] = MENU_BKG_COLOR;
+		else
+			img[i] = MAIN_BKG_COLOR;
+	}
+}
+
+void	rendering(t_data *d, t_mlx *mlx, t_matrix *mx)
+{
+	int	x;
+	int	y;
+
+	draw_bkg(d->mlx);
+	y = 0;
+	while (y < mx->height)
+	{
+		x = 0;
+		while (x < mx->width)
+		{
+			//if (x < mx->width - 1)
+			//	bresenham_algo(d, x, y, x + 1, y);
+			//if (y < mx->height - 1)
+			//	bresenham_algo(d, x, y, x, y + 1);
+			x++;
+		}
+		y++;
+	}
+	mlx_put_image_to_window(mlx->init, mlx->win, mlx->img, 0, 0);
+}
+
+void	init_s_mlx(t_data *d, t_mlx *mlx)
+{
+	mlx->win = NULL;
+	mlx->img = NULL;
+	mlx->data_addr = NULL;
+	mlx->init = mlx_init();
+	mlx->win = mlx_new_window(mlx->init, SCR_WIDTH, SCR_HEIGHT, "FdF");
+	mlx->img = mlx_new_image(mlx->init, SCR_WIDTH, SCR_HEIGHT);
+	mlx->data_addr = \
+	mlx_get_data_addr(mlx->img, &mlx->bpp, &mlx->size_line, &mlx->endian);
+	if (!mlx->init || !mlx->win || !mlx->img || !mlx->data_addr)
+	{
+		free(mlx->init);
+		free(mlx->win);
+		free(mlx->img);
+		free(mlx->data_addr);
+		fdf_exit(d, "Malloc Failure");
+	}
+}
+
+void	init_s_camera(int map_width, int map_height, t_camera *cam)
+{
+	int	width_ratio;
+	int	height_ratio;
+
+	width_ratio = (SCR_WIDTH - MENU_WIDTH) / map_width / 2;
+	height_ratio = SCR_HEIGHT / map_height / 2;
+	cam->zoom = ft_min(width_ratio, height_ratio);
+	cam->alpha = 0;
+	cam->beta = 0;
+	cam->gamma = 0;
+	cam->z_div = 1;
+	cam->x_et = 0;
+	cam->y_et = 0;
+}
 
 void	init_s_matrix(t_matrix *mx)
 {
@@ -383,7 +418,6 @@ t_data	*alloc_s_data(void)
 	if (d)
 	{
 		d->mx = (t_matrix *)malloc(sizeof(t_matrix));
-		//d->map = (t_map *)malloc(sizeof(t_map));
 		d->mlx = (t_mlx *)malloc(sizeof(t_mlx));
 	}
 	if (!d || !d->mx || !d->mlx)
@@ -403,7 +437,10 @@ int	main(int argc, char *argv[])
 	init_s_matrix(d->mx);
 	check_argc(d, argc);
 	get_matrix(d, argv[1]);
-	//draw_map(d);
+	init_s_mlx(d, d->mlx);
+	init_s_camera(d->mx->width, d->mx->height, &d->cam);
+	rendering(d, d->mlx, d->mx);
+	mlx_loop(d->mlx->init);
 	//int i = -1;
 	//while (++i < d->mx->height)
 	//{
