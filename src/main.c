@@ -6,7 +6,7 @@
 /*   By: hiroaki <hiroaki@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/17 02:08:05 by hiroaki           #+#    #+#             */
-/*   Updated: 2022/11/28 01:24:59 by hiroaki          ###   ########.fr       */
+/*   Updated: 2022/11/28 17:31:16 by hiroaki          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -193,13 +193,12 @@ void	get_matrix(t_data *d, char *filename)
 	init_matrix(d, d->mx, filename);
 }
 
-//int ft_abs(double diff)
-//{
-//	if (diff < 0)
-//		return (-diff);
-//	return (diff);
-//}
-//
+int ft_abs(int diff)
+{
+	if (diff < 0)
+		return (-diff);
+	return (diff);
+}
 
 int	ft_max(int a, int b)
 {
@@ -215,109 +214,76 @@ int	ft_min(int a, int b)
 	return (b);
 }
 
-//
-//void	isometric(double *x, double *y, int z)
-//{
-//	double	prev_x;
-//	double	prev_y;
-//
-//	prev_x = *x;
-//	prev_y = *y;
-//	*x = (prev_x - prev_y) * cos(0.8);
-//	*y = (prev_x + prev_y) * sin(0.8) - z;
-//}
-//
-//void	rotate_x(double *y, double *z, double alpha)
-//{
-//	double	prev_y;
-//
-//	prev_y = *y;
-//	*y = prev_y * cos(alpha) + *z * sin(alpha);
-//	*z = -prev_y * sin(alpha) + *z * cos(alpha);
-//}
-//
-//void	rotate_y(double *x, double *z, double beta)
-//{
-//	double	prev_x;
-//
-//	prev_x = *x;
-//	*x = prev_x * cos(beta) + *z * sin(beta);
-//	*z = -prev_x * sin(beta) + *z * cos(beta);
-//}
-//
-//void	rotate_z(double *x, double *y, double gamma)
-//{
-//	double	prev_x;
-//	double	prev_y;
-//
-//	prev_x = *x;
-//	prev_y = *y;
-//	*x = prev_x * cos(gamma) - prev_y * sin(gamma);
-//	*y = prev_x * sin(gamma) - prev_y * cos(gamma);
-//}
-//
-//void	default_locate(double *x, double *y, double *x1, double *y1)
-//{
-//	double	x_locate;
-//	double	y_locate;
-//
-//	x_locate = 330;
-//	y_locate = 350;
-//	*x += x_locate;
-//	*x1 += x_locate;
-//	*y += y_locate;
-//	*y1 += y_locate;
-//}
-//
-//void	settings(t_data *d, double *x, double *y, double *x1, double *y1)
-//{
-//	double		z;
-//	double		z1;
-//
-//	z = d->m.coord[(int)*y][(int)*x];
-//	z1 = d->m.coord[(int)*y1][(int)*x1];
-//	d->m.color_code = d->m.color[(int)*y][(int)*x];
-//	*x *= d->m.zoom;
-//	*y *= d->m.zoom;
-//	*x1 *= d->m.zoom;
-//	*y1 *= d->m.zoom;
-//	rotate_x(y, &z, 0);
-//	rotate_y(x, &z, 0);
-//	rotate_z(x, y, 0);
-//	*x += (WIDTH - MENU_WIDTH) / 2 + MENU_WIDTH;
-//	*y += (HEIGHT + d->m.height * d->m.zoom) / 2;
-//	//isometric(x, y, z);
-//	//isometric(x1, y1, z1);
-//	//default_locate(x, y, x1, y1);
-//}
-//
-//#include <stdio.h>
-//void	bresenham_algo(t_data *d, double x, double y, double x1, double y1)
-//{
-//	int		max;
-//	double	x_step;
-//	double	y_step;
-//
-//	settings(d, &x, &y, &x1, &y1);
-//	x_step = ft_abs(x1 - x);
-//	y_step = ft_abs(y1 - y);
-//	max = ft_max(x_step, y_step);
-//	x_step /= max;
-//	y_step /= max;
-//	while ((int)(x - x1) || (int)(y - y1))
-//	{
-//		mlx_pixel_put(d->mx.init, d->mx.win, x, y, d->m.color_code);
-//		x += x_step;
-//		y += y_step;
-//	}
-//}
-//
-//int	deal_key(int key, void *d)
-//{
-//	ft_printf("%d", key);
-//	return (0);
-//}
-//
+void	draw_colored_line(t_mlx *mlx, t_pos cur, t_pos delta, t_pos sign)
+{
+	int	i;
+
+	if (cur.x >= MENU_WIDTH && cur.x < SCR_WIDTH && \
+		cur.y >= 0 && cur.y < SCR_HEIGHT)
+	{
+		i = (cur.x * mlx->bpp / 8) + (cur.y * mlx->size_line);
+		mlx->data_addr[i] = 0x4E;
+		mlx->data_addr[++i] = 0x1E;
+		mlx->data_addr[++i] = 0x4F;
+	}
+}
+
+void my_mlx_pixel_put(t_mlx *data, int x, int y, int color)
+{
+	char	*dst;
+
+	dst = data->data_addr + (y * data->size_line + x * (data->bpp / 8));
+	*(unsigned int *)dst = color;
+}
+
+/*
+ * Δx = |x`-x| => 次のpixelまでのx軸方向の距離
+ * Δy = |y`-y| => 次のpixelまでのy軸方向の距離
+ * k = Δy/Δx   => (x, y)から(x`, y`)の直線の傾き
+ *
+ *            error[i-1]+k       (error[i-1] < 0.5)
+ * error[i] { error[i-1]+k-1     (error[i-1] >= 0.5) => 誤差(実数)
+ *
+ * 実数k,0.5を整数として扱いたいので両辺を2Δx倍(2Δx * error[i] => error[i]`)
+ *             error[i-1]`+2Δy        (error[i-1]` >= Δx)
+ * error[i]` { error[i-1]`+2Δy-2Δx    (error[i-1]` >= Δx) => 誤差(整数)
+ */
+
+void	bresenham(t_mlx *mlx, t_pos cur, t_pos to)
+{
+	t_pos	delta;
+	t_pos	sign;
+	int		error[2];
+
+	delta.x = ft_abs(to.x - cur.x);
+	delta.y = ft_abs(to.y - cur.y);
+	sign.x = (cur.x < to.x) - (cur.x >= to.x);
+	sign.y = (cur.y < to.y) - (cur.y >= to.y);
+	error[0] = delta.x - delta.y;
+	while (cur.x != to.x || cur.y != to.y)
+	{
+		draw_colored_line(mlx, cur, delta, sign);
+		//my_mlx_pixel_put(mlx, cur.x, cur.y, 0x00FF0000);
+			error[1] = error[0] * 2;
+		if (error[1] > -delta.y)
+		{
+			error[0] -= delta.y;
+			cur.x += sign.x;
+		}
+		if (error[1] < delta.x)
+		{
+			error[0] += delta.x;
+			cur.y += sign.y;
+		}
+	}
+}
+
+int	deal_key(int key, void *d)
+{
+	ft_printf("%d", key);
+	return (0);
+}
+
 void	draw_bkg(t_mlx *mx)
 {
 	int	i;
@@ -339,25 +305,71 @@ void	draw_bkg(t_mlx *mx)
 	}
 }
 
+t_pos	rotate(t_camera *cam, t_pos p)
+{
+	double	prev_x;
+	double	prev_y;
+
+	//prev_y = p.y;
+	//p.y = prev_y * cos(cam->alpha) + p.z * sin(cam->alpha);
+	//p.z = -prev_y * sin(cam->alpha) + p.z * cos(cam->alpha);
+
+	//prev_x = p.x;
+	//p.x = prev_x * cos(cam->beta) + p.z * sin(cam->beta);
+	//p.z = -prev_x * sin(cam->beta) + p.z * cos(cam->beta);
+
+	prev_x = p.x;
+	prev_y = p.y;
+	//p.x = prev_x * cos(cam->gamma) - prev_y * sin(cam->gamma);
+	//p.y = prev_x * sin(cam->gamma) - prev_y * cos(cam->gamma);
+	p.x = (prev_x - prev_y) * cos(0.523599);
+	p.y = -p.z + (prev_x + prev_y) * sin(0.523599);
+	return (p);
+}
+
+t_pos	pos(t_matrix *mx, t_camera *cam, t_pos p)
+{
+	p.z = mx->coord[p.y][p.x];
+	p.x *= cam->zoom;
+	p.y *= cam->zoom;
+	p.z *= cam->zoom * cam->z_div;
+	p.x -= (mx->width * cam->zoom) / 2;
+	p.y -= (mx->height * cam->zoom) / 2;
+	p = rotate(cam, p);
+	p.x += (SCR_WIDTH - MENU_WIDTH) / 2 + cam->x_et + MENU_WIDTH;
+	p.y += (SCR_HEIGHT + mx->height * cam->zoom) / 2 + cam->y_et;
+	return (p);
+}
+
+void	draw_line(t_data *d, t_matrix *mx, t_pos cur, t_pos to)
+{
+	if (cur.x != mx->width - 1)
+	{
+		to.x++;
+		bresenham(d->mlx, pos(mx, &d->cam, cur), pos(mx, &d->cam, to));
+		to.x--;
+	}
+	if (cur.y != mx->height - 1)
+	{
+		to.y++;
+		bresenham(d->mlx, pos(mx, &d->cam, cur), pos(mx, &d->cam, to));
+	}
+}
+
 void	rendering(t_data *d, t_mlx *mlx, t_matrix *mx)
 {
-	int	x;
-	int	y;
+	t_pos	p;
 
 	draw_bkg(d->mlx);
-	y = 0;
-	while (y < mx->height)
+	p.y = -1;
+	while (++p.y < mx->height)
 	{
-		x = 0;
-		while (x < mx->width)
+		p.x = -1;
+		while (++p.x < mx->width)
 		{
-			//if (x < mx->width - 1)
-			//	bresenham_algo(d, x, y, x + 1, y);
-			//if (y < mx->height - 1)
-			//	bresenham_algo(d, x, y, x, y + 1);
-			x++;
+			if (p.x != mx->width -1 || p.y != mx->height - 1)
+				draw_line(d, mx, p, p);
 		}
-		y++;
 	}
 	mlx_put_image_to_window(mlx->init, mlx->win, mlx->img, 0, 0);
 }
@@ -441,13 +453,5 @@ int	main(int argc, char *argv[])
 	init_s_camera(d->mx->width, d->mx->height, &d->cam);
 	rendering(d, d->mlx, d->mx);
 	mlx_loop(d->mlx->init);
-	//int i = -1;
-	//while (++i < d->mx->height)
-	//{
-	//	int j = -1;
-	//	while (++j < d->mx->width)
-	//		ft_printf("%2d ", d->mx->coord[i][j]);
-	//	ft_printf("\n");
-	//}
 	fdf_exit(d, NULL);
 }

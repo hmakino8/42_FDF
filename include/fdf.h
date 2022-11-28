@@ -6,7 +6,7 @@
 /*   By: hiroaki <hiroaki@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/10 19:08:02 by hmakino           #+#    #+#             */
-/*   Updated: 2022/11/28 01:30:40 by hiroaki          ###   ########.fr       */
+/*   Updated: 2022/11/28 03:33:47 by hiroaki          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,9 +48,6 @@ typedef struct s_pos
 	int	x;
 	int	y;
 	int	z;
-	int	x1;
-	int	y1;
-	int	z1;
 }	t_pos;
 
 typedef struct s_camera
@@ -64,16 +61,12 @@ typedef struct s_camera
 	double		z_div;
 }	t_camera;
 
-typedef struct s_map
-{
-}	t_map;
-
 typedef struct s_mlx
 {
 	void	*init;
 	void	*win;
 	void	*img;
-	void	*data_addr;
+	char	*data_addr;
 	int		bpp;
 	int		size_line;
 	int		endian;
@@ -83,7 +76,6 @@ typedef struct s_data
 {
 	t_pos		p;
 	t_camera	cam;
-	t_map		map;
 	t_mlx		*mlx;
 	t_matrix	*mx;
 }	t_data;
