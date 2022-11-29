@@ -6,7 +6,7 @@
 /*   By: hiroaki <hiroaki@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/01 23:44:45 by hiroaki           #+#    #+#             */
-/*   Updated: 2022/11/26 03:59:16 by hiroaki          ###   ########.fr       */
+/*   Updated: 2022/11/30 04:12:42 by hiroaki          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,25 +35,22 @@ static bool	is_valid_base(char *str, int base, bool *ok)
 
 static int	conv_decimal_digit(char c, int base)
 {
-	int			d;
+	int			i;
 	const char	*digits;
 
 	digits = ft_strdup("0123456789ABCDEF");
-	if (!digits)
-		return (-1);
-	d = -1;
-	while (digits[++d])
+	i = 0;
+	while (i < base)
 	{
-		if (digits[d] == c)
-			break ;
-		if (!digits[d])
+		if (digits[i] == ft_toupper(c))
 		{
 			free((void *)digits);
-			return (-1);
+			return (i);
 		}
+		i++;
 	}
 	free((void *)digits);
-	return (d);
+	return (-1);
 }
 
 static int	convert_num(char *str, int base, int sign, bool *ok)
