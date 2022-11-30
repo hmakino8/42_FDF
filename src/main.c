@@ -6,7 +6,7 @@
 /*   By: hiroaki <hiroaki@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/17 02:08:05 by hiroaki           #+#    #+#             */
-/*   Updated: 2022/11/30 04:24:09 by hiroaki          ###   ########.fr       */
+/*   Updated: 2022/11/30 23:54:26 by hiroaki          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -288,15 +288,13 @@ double	get_color_ratio(t_pos delta, t_pos st, t_pos cur, t_pos to)
 	return (ratio);
 }
 
-t_pos	get_color(t_pos delta, t_pos st, t_pos cur, t_pos to)
+t_pos	get_color(t_pos st, t_pos cur, t_pos to, double ratio)
 {
 	int		sc;
 	int		tc;
-	double	ratio;
 
 	sc = st.c.color;
 	tc = to.c.color;
-	ratio = get_color_ratio(delta, st, cur, to);
 	cur.c.red = (sc >> 16 & 0xFF) * (1 - ratio) + (tc >> 16 & 0xFF) * ratio;
 	cur.c.green = (sc >> 8 & 0xFF) * (1 - ratio) + (tc >> 8 & 0xFF) * ratio;
 	cur.c.blue = (sc & 0xFF) * (1 - ratio) + (tc & 0xFF) * ratio;
@@ -310,6 +308,7 @@ void	bresenham(t_data *d, t_pos st, t_pos to)
 	t_pos	delta;
 	t_pos	sign;
 	int		error[2];
+	double	ratio;
 
 	delta.x = ft_abs(to.x - st.x);
 	delta.y = ft_abs(to.y - st.y);
@@ -320,7 +319,10 @@ void	bresenham(t_data *d, t_pos st, t_pos to)
 	while (cur.x != to.x || cur.y != to.y)
 	{
 		if (!cur.c.map_color && cur.c.color != to.c.color)
-			cur = get_color(delta, st, cur, to);
+		{
+			ratio = get_color_ratio(delta, st, cur, to);
+			cur = get_color(st, cur, to, ratio);
+		}
 		draw_colored_line(d->mlx, d->mx, cur);
 		cur = relocate_pos(error, cur, delta, sign);
 	}
@@ -378,23 +380,25 @@ t_pos	rotate(t_camera *cam, t_pos p)
 t_pos	get_original_color(t_data *d, t_pos p)
 {
 	int		z_min;
-	int		z_cur;
 	int		z_max;
-	double	rate;
+	double	ratio;
+	t_pos	top;
+	t_pos	btm;
 
-	z_cur = p.z;
-	z_min = d->mx->depth_min;
 	z_max = d->mx->depth_max;
-	rate = (double)(z_cur - z_min) / (z_max - z_min);
-	if (rate > 0.8)
+	z_min = d->mx->depth_min;
+	ratio = (double)(p.z - z_min) / (z_max - z_min);
+	if (p.z == d->mx->depth_max)
 		p.c.color = DEEPPINK;
-	else if (rate > 0.4)
-		p.c.color = 0xFF8C00;
+	else if (p.z == d->mx->depth_min)
+		p.c.color = INDIGO;
 	else
-		p.c.color = 0x4B0082;
+	{
+		top.c.color = DEEPPINK;
+		btm.c.color = INDIGO;
+		p = get_color(top, p, btm, ratio);
+	}
 	return (p);
-	//else if (rate > 0.6)
-	//	p.c.color = MAGENTA;
 }
 
 t_pos	reset_pos(t_data *d, t_pos p)
