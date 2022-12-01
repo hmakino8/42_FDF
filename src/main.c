@@ -6,7 +6,7 @@
 /*   By: hiroaki <hiroaki@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/17 02:08:05 by hiroaki           #+#    #+#             */
-/*   Updated: 2022/11/30 23:54:26 by hiroaki          ###   ########.fr       */
+/*   Updated: 2022/12/02 01:30:45 by hiroaki          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 
 int	ft_max(int a, int b);
 int	ft_min(int a, int b);
+void	adjust_screen(t_camera *cam, t_matrix *mx);
 
 void	free_all_struct(t_data *d)
 {
@@ -147,8 +148,8 @@ void	get_width(t_data *d, t_matrix *mx)
 	mx->line = NULL;
 	if (!mx->width)
 		mx->width = width;
-	if (!width || mx->width != width)
-		fdf_exit(d, "Invalid width in map.");
+	else
+		mx->width = ft_max(mx->width, width);
 }
 
 void	get_range(t_data *d, char *filename)
@@ -167,23 +168,34 @@ void	get_range(t_data *d, char *filename)
 	close(fd);
 }
 
+void	check_width(t_data *d, t_matrix *mx, int *width)
+{
+	if (!*width)
+		*width = mx->width;
+	else if (mx->width != *width)
+		fdf_exit(d, "Invalid width in map.");
+}
+
 void	init_matrix(t_data *d, t_matrix *mx, char *filename)
 {
 	int	i;
 	int	fd;
+	int	width;
 	int	signal;
 
 	init_fd(d, &fd, filename);
+	width = 0;
 	i = -1;
 	while (1)
 	{
-		mx->line = ft_strtrim(get_next_line(fd, &signal), "\n");
+		mx->line = ft_strtrim(get_next_line(fd, &signal), "\n ");
 		if (signal == END_OF_FILE)
 			return ;
 		mx->elem = ft_split(mx->line, ' ', &mx->width);
-		parse_line(d, mx, ++i);
+		check_width(d, mx, &width);
 		if (!mx->elem)
 			fdf_exit(d, "Failed to read map");
+		parse_line(d, mx, ++i);
 		free(mx->line);
 	}
 	close(fd);
@@ -219,13 +231,17 @@ int	ft_min(int a, int b)
 	return (b);
 }
 
-void	draw_colored_line(t_mlx *mlx, t_matrix *mx, t_pos cur)
+void	draw_colored_line(t_mlx *mlx, t_matrix *mx, t_camera *cam, t_pos cur)
 {
 	int	i;
 
 	if (cur.x >= MENU_WIDTH && cur.x < SCR_WIDTH && \
 		cur.y >= 0 && cur.y < SCR_HEIGHT)
 	{
+		cam->eg.left = ft_min(cam->eg.left, cur.x);
+		cam->eg.right = ft_max(cam->eg.right, cur.x);
+		cam->eg.upper = ft_max(cam->eg.upper, cur.y);
+		cam->eg.lower = ft_min(cam->eg.lower, cur.y);
 		i = (cur.x * mlx->bpp / 8) + (cur.y * mlx->size_line);
 		mlx->data_addr[i] = cur.c.color;
 		mlx->data_addr[++i] = (int)cur.c.color >> 8;
@@ -240,11 +256,6 @@ void my_mlx_pixel_put(t_mlx *data, int x, int y, int color)
 	dst = data->data_addr + (y * data->size_line + x * (data->bpp / 8));
 	*(unsigned int *)dst = color;
 }
-
-//void	get_color_ratio(t_mlx *mlx, t_matrix *mx, t_pos cur, t_pos to)
-//{
-//
-//}
 
 /*
  * Δx = |x`-x| => 次のpixelまでのx軸方向の距離
@@ -307,8 +318,8 @@ void	bresenham(t_data *d, t_pos st, t_pos to)
 	t_pos	cur;
 	t_pos	delta;
 	t_pos	sign;
-	int		error[2];
 	double	ratio;
+	int		error[2];
 
 	delta.x = ft_abs(to.x - st.x);
 	delta.y = ft_abs(to.y - st.y);
@@ -323,7 +334,7 @@ void	bresenham(t_data *d, t_pos st, t_pos to)
 			ratio = get_color_ratio(delta, st, cur, to);
 			cur = get_color(st, cur, to, ratio);
 		}
-		draw_colored_line(d->mlx, d->mx, cur);
+		draw_colored_line(d->mlx, d->mx, &d->cam, cur);
 		cur = relocate_pos(error, cur, delta, sign);
 	}
 }
@@ -349,9 +360,9 @@ void	draw_bkg(t_mlx *mx)
 	{
 		j = i % SCR_WIDTH;
 		if (j < MENU_WIDTH)
-			img[i] = MENU_BKG_COLOR;
+			img[i] = DARKGRAY;
 		else
-			img[i] = MAIN_BKG_COLOR;
+			img[i] = DARKGRAY;
 	}
 }
 
@@ -360,21 +371,78 @@ t_pos	rotate(t_camera *cam, t_pos p)
 	double	prev_x;
 	double	prev_y;
 
-	//prev_y = p.y;
-	//p.y = prev_y * cos(cam->alpha) + p.z * sin(cam->alpha);
-	//p.z = -prev_y * sin(cam->alpha) + p.z * cos(cam->alpha);
-
-	//prev_x = p.x;
-	//p.x = prev_x * cos(cam->beta) + p.z * sin(cam->beta);
-	//p.z = -prev_x * sin(cam->beta) + p.z * cos(cam->beta);
-
-	prev_x = p.x;
-	prev_y = p.y;
-	//p.x = prev_x * cos(cam->gamma) - prev_y * sin(cam->gamma);
-	//p.y = prev_x * sin(cam->gamma) - prev_y * cos(cam->gamma);
-	p.x = (prev_x - prev_y) * cos(0.523599);
-	p.y = -p.z + (prev_x + prev_y) * sin(0.523599);
+	if (cam->init)
+	{
+		prev_x = p.x;
+		prev_y = p.y;
+		p.x = (prev_x - prev_y) * cos(0.523599);
+		p.y = -p.z + (prev_x + prev_y) * sin(0.523599);
+	}
+	else
+	{
+		prev_y = p.y;
+		p.y = prev_y * cos(cam->alpha) + p.z * sin(cam->alpha);
+		p.z = -prev_y * sin(cam->alpha) + p.z * cos(cam->alpha);
+		prev_x = p.x;
+		p.x = prev_x * cos(cam->beta) + p.z * sin(cam->beta);
+		p.z = -prev_x * sin(cam->beta) + p.z * cos(cam->beta);
+		prev_x = p.x;
+		prev_y = p.y;
+		p.x = prev_x * cos(cam->gamma) - prev_y * sin(cam->gamma);
+		p.y = prev_x * sin(cam->gamma) - prev_y * cos(cam->gamma);
+	}
 	return (p);
+}
+
+//t_pos	depth_color(int z_max, int z_min, t_pos p, double ratio)
+//{
+//	t_pos	top;
+//	t_pos	btm;
+//
+//	if (p.z >= 0)
+//	{
+//		top.c.color = DEEPPINK;
+//		btm.c.color = INDIGO;
+//	}
+//	else
+//	{
+//		//top.c.color = INDIGO;
+//		btm.c.color = BLACKDIAMOND;
+//	}
+//	if (p.z == z_max)
+//		p.c.color = top.c.color;
+//	else if (p.z == z_min)
+//		p.c.color = btm.c.color;
+//	else
+//		return (get_color(btm, p, top, ratio));
+//	return (p);
+//}
+
+int depth_gradation(t_pos p)
+{
+	if (p.z > 100)
+		return (0xFFDF8D);
+	if (p.z > 75)
+		return (0xFFDE7A);
+	if (p.z > 50)
+		return (0xFFC568);
+	if (p.z > 25)
+		return (0xFD996B);
+	if (p.z > 15)
+		return (0xF7856C);
+	if (p.z > 10)
+		return (0xF06E6C);
+	if (p.z > 5)
+		return (0xD9576B);
+	if (p.z > 0)
+		return (0xA44369);
+	if (p.z > -10)
+		return (0x833F68);
+	if (p.z > -20)
+		return (0x833F68);
+	if (p.z > -50)
+		return (0x5E3C65);
+	return (0x3F3A63);
 }
 
 t_pos	get_original_color(t_data *d, t_pos p)
@@ -387,17 +455,20 @@ t_pos	get_original_color(t_data *d, t_pos p)
 
 	z_max = d->mx->depth_max;
 	z_min = d->mx->depth_min;
+	top.c.color = DEEPPINK;
+	btm.c.color = INDIGO;
 	ratio = (double)(p.z - z_min) / (z_max - z_min);
-	if (p.z == d->mx->depth_max)
-		p.c.color = DEEPPINK;
-	else if (p.z == d->mx->depth_min)
-		p.c.color = INDIGO;
-	else
+	if (z_min > -20)
 	{
-		top.c.color = DEEPPINK;
-		btm.c.color = INDIGO;
-		p = get_color(top, p, btm, ratio);
+		if (p.z == z_max)
+			p.c.color = top.c.color;
+		else if (p.z == z_min)
+			p.c.color = btm.c.color;
+		else
+			p = get_color(btm, p, top, ratio);
 	}
+	else
+		p.c.color = depth_gradation(p);
 	return (p);
 }
 
@@ -418,7 +489,7 @@ t_pos	reset_pos(t_data *d, t_pos p)
 	p.x -= (d->mx->width * d->cam.zoom) / 2;
 	p.y -= (d->mx->height * d->cam.zoom) / 2;
 	p = rotate(&d->cam, p);
-	p.x += (SCR_WIDTH - MENU_WIDTH) / 2 + d->cam.x_et + MENU_WIDTH;
+	p.x += SCR_WIDTH / 2 + d->cam.x_et;
 	p.y += (SCR_HEIGHT + d->mx->height * d->cam.zoom) / 2 + d->cam.y_et;
 	return (p);
 }
@@ -443,6 +514,14 @@ void	draw_line(t_data *d, t_pos p)
 	}
 }
 
+void	put_menu(t_mlx *mlx)
+{
+	mlx_string_put(mlx->init, mlx->win, 3, 60, 0xB0E0E6, \
+	"    U S A G E    ");
+	mlx_string_put(mlx->init, mlx->win, 3, 90, 0xE6E6FA, \
+	"zoom *------- \'+\'");
+}
+
 void	rendering(t_data *d, t_mlx *mlx, t_matrix *mx)
 {
 	t_pos	p;
@@ -459,6 +538,7 @@ void	rendering(t_data *d, t_mlx *mlx, t_matrix *mx)
 		}
 	}
 	mlx_put_image_to_window(mlx->init, mlx->win, mlx->img, 0, 0);
+	put_menu(mlx);
 }
 
 void	init_s_mlx(t_data *d, t_mlx *mlx)
@@ -481,20 +561,29 @@ void	init_s_mlx(t_data *d, t_mlx *mlx)
 	}
 }
 
-void	init_s_camera(int map_width, int map_height, t_camera *cam)
+void	init_s_camera(t_camera *cam, t_matrix *mx)
 {
 	int	width_ratio;
 	int	height_ratio;
 
-	width_ratio = (SCR_WIDTH - MENU_WIDTH) / map_width / 2;
-	height_ratio = SCR_HEIGHT / map_height / 2;
-	cam->zoom = ft_min(width_ratio, height_ratio);
+	width_ratio = SCR_WIDTH / mx->width / 2;
+	height_ratio = SCR_HEIGHT / mx->height / 2;
+	cam->zoom = ft_min(width_ratio, height_ratio) + 1;
+	cam->init = true;
 	cam->alpha = 0;
 	cam->beta = 0;
 	cam->gamma = 0;
-	cam->z_div = 1;
 	cam->x_et = 0;
-	cam->y_et = 0;
+	if (mx->depth_max > 50)
+	{
+		cam->y_et = -450;
+		cam->z_div = 0.08;
+	}
+	else
+	{
+		cam->y_et = -100;
+		cam->z_div = 0.8;
+	}
 }
 
 void	init_s_matrix(t_matrix *mx)
@@ -538,8 +627,8 @@ int	main(int argc, char *argv[])
 	init_s_matrix(d->mx);
 	check_argc(d, argc);
 	get_matrix(d, argv[1]);
+	init_s_camera(&d->cam, d->mx);
 	init_s_mlx(d, d->mlx);
-	init_s_camera(d->mx->width, d->mx->height, &d->cam);
 	rendering(d, d->mlx, d->mx);
 	mlx_loop(d->mlx->init);
 	fdf_exit(d, NULL);
