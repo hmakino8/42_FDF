@@ -6,7 +6,7 @@
 /*   By: hiroaki <hiroaki@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/17 02:08:05 by hiroaki           #+#    #+#             */
-/*   Updated: 2022/12/02 01:30:45 by hiroaki          ###   ########.fr       */
+/*   Updated: 2022/12/02 15:12:07 by hiroaki          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,8 @@
 int	ft_max(int a, int b);
 int	ft_min(int a, int b);
 void	adjust_screen(t_camera *cam, t_matrix *mx);
+int	on_keydown(int key, t_data *d);
+int	close_window(t_data *d);
 
 void	free_all_struct(t_data *d)
 {
@@ -235,26 +237,13 @@ void	draw_colored_line(t_mlx *mlx, t_matrix *mx, t_camera *cam, t_pos cur)
 {
 	int	i;
 
-	if (cur.x >= MENU_WIDTH && cur.x < SCR_WIDTH && \
-		cur.y >= 0 && cur.y < SCR_HEIGHT)
+	if (cur.x >= 0 && cur.y >= 0 && cur.x < SCR_WIDTH && cur.y < SCR_HEIGHT)
 	{
-		cam->eg.left = ft_min(cam->eg.left, cur.x);
-		cam->eg.right = ft_max(cam->eg.right, cur.x);
-		cam->eg.upper = ft_max(cam->eg.upper, cur.y);
-		cam->eg.lower = ft_min(cam->eg.lower, cur.y);
 		i = (cur.x * mlx->bpp / 8) + (cur.y * mlx->size_line);
 		mlx->data_addr[i] = cur.c.color;
 		mlx->data_addr[++i] = (int)cur.c.color >> 8;
 		mlx->data_addr[++i] = (int)cur.c.color >> 16;
 	}
-}
-
-void my_mlx_pixel_put(t_mlx *data, int x, int y, int color)
-{
-	char	*dst;
-
-	dst = data->data_addr + (y * data->size_line + x * (data->bpp / 8));
-	*(unsigned int *)dst = color;
 }
 
 /*
@@ -299,6 +288,28 @@ double	get_color_ratio(t_pos delta, t_pos st, t_pos cur, t_pos to)
 	return (ratio);
 }
 
+t_pos	get_menu_color(t_pos cur)
+{
+	int		mc;
+	double	ratio;
+
+	if (!cur.x)
+		cur.c.color = NO_COLOR;
+	else if (cur.x <= MENU_WIDTH)
+	{
+		ratio = 0.01;
+		mc = BLACKDIAMOND;
+		cur.c.red = \
+		(cur.c.red >> 16 & 0xFF) * (1 - ratio) + (mc >> 16 & 0xFF) * ratio;
+		cur.c.green = \
+		(cur.c.green >> 8 & 0xFF) * (1 - ratio) + (mc >> 8 & 0xFF) * ratio;
+		cur.c.blue = \
+		(cur.c.blue & 0xFF) * (1 - ratio) + (mc & 0xFF) * ratio;
+		cur.c.color = (cur.c.red << 16 | (cur.c.green << 8) | cur.c.blue);
+	}
+	return (cur);
+}
+
 t_pos	get_color(t_pos st, t_pos cur, t_pos to, double ratio)
 {
 	int		sc;
@@ -310,16 +321,16 @@ t_pos	get_color(t_pos st, t_pos cur, t_pos to, double ratio)
 	cur.c.green = (sc >> 8 & 0xFF) * (1 - ratio) + (tc >> 8 & 0xFF) * ratio;
 	cur.c.blue = (sc & 0xFF) * (1 - ratio) + (tc & 0xFF) * ratio;
 	cur.c.color = (cur.c.red << 16 | (cur.c.green << 8) | cur.c.blue);
-	return (cur);
+	return (get_menu_color(cur));
 }
 
 void	bresenham(t_data *d, t_pos st, t_pos to)
 {
+	int		error[2];
+	double	ratio;
 	t_pos	cur;
 	t_pos	delta;
 	t_pos	sign;
-	double	ratio;
-	int		error[2];
 
 	delta.x = ft_abs(to.x - st.x);
 	delta.y = ft_abs(to.y - st.y);
@@ -339,12 +350,6 @@ void	bresenham(t_data *d, t_pos st, t_pos to)
 	}
 }
 
-int	deal_key(int key, void *d)
-{
-	ft_printf("%d", key);
-	return (0);
-}
-
 void	draw_bkg(t_mlx *mx)
 {
 	int	i;
@@ -359,10 +364,7 @@ void	draw_bkg(t_mlx *mx)
 	while (++i < SCR_WIDTH * SCR_HEIGHT)
 	{
 		j = i % SCR_WIDTH;
-		if (j < MENU_WIDTH)
-			img[i] = DARKGRAY;
-		else
-			img[i] = DARKGRAY;
+		img[i] = NO_COLOR;
 	}
 }
 
@@ -371,52 +373,25 @@ t_pos	rotate(t_camera *cam, t_pos p)
 	double	prev_x;
 	double	prev_y;
 
-	if (cam->init)
-	{
-		prev_x = p.x;
-		prev_y = p.y;
-		p.x = (prev_x - prev_y) * cos(0.523599);
-		p.y = -p.z + (prev_x + prev_y) * sin(0.523599);
-	}
-	else
-	{
-		prev_y = p.y;
-		p.y = prev_y * cos(cam->alpha) + p.z * sin(cam->alpha);
-		p.z = -prev_y * sin(cam->alpha) + p.z * cos(cam->alpha);
-		prev_x = p.x;
-		p.x = prev_x * cos(cam->beta) + p.z * sin(cam->beta);
-		p.z = -prev_x * sin(cam->beta) + p.z * cos(cam->beta);
-		prev_x = p.x;
-		prev_y = p.y;
-		p.x = prev_x * cos(cam->gamma) - prev_y * sin(cam->gamma);
-		p.y = prev_x * sin(cam->gamma) - prev_y * cos(cam->gamma);
-	}
+	prev_y = p.y;
+	p.y = prev_y * cos(cam->alpha) + p.z * sin(cam->alpha);
+	p.z = -prev_y * sin(cam->alpha) + p.z * cos(cam->alpha);
+
+	prev_x = p.x;
+	p.x = prev_x * cos(cam->beta) + p.z * sin(cam->beta);
+	p.z = -prev_x * sin(cam->beta) + p.z * cos(cam->beta);
+
+	prev_x = p.x;
+	prev_y = p.y;
+	p.x = prev_x * cos(cam->gamma) - prev_y * sin(cam->gamma);
+	p.y = prev_x * sin(cam->gamma) + prev_y * cos(cam->gamma);
+
+	prev_x = p.x;
+	prev_y = p.y;
+	p.x = (prev_x - prev_y) * cos(0.523599);
+	p.y = -p.z + (prev_x + prev_y) * sin(0.523599);
 	return (p);
 }
-
-//t_pos	depth_color(int z_max, int z_min, t_pos p, double ratio)
-//{
-//	t_pos	top;
-//	t_pos	btm;
-//
-//	if (p.z >= 0)
-//	{
-//		top.c.color = DEEPPINK;
-//		btm.c.color = INDIGO;
-//	}
-//	else
-//	{
-//		//top.c.color = INDIGO;
-//		btm.c.color = BLACKDIAMOND;
-//	}
-//	if (p.z == z_max)
-//		p.c.color = top.c.color;
-//	else if (p.z == z_min)
-//		p.c.color = btm.c.color;
-//	else
-//		return (get_color(btm, p, top, ratio));
-//	return (p);
-//}
 
 int depth_gradation(t_pos p)
 {
@@ -561,6 +536,13 @@ void	init_s_mlx(t_data *d, t_mlx *mlx)
 	}
 }
 
+void	init_axis(t_camera *cam)
+{
+	cam->alpha = 0;
+	cam->beta = 0;
+	cam->gamma = 0;
+}
+
 void	init_s_camera(t_camera *cam, t_matrix *mx)
 {
 	int	width_ratio;
@@ -569,15 +551,12 @@ void	init_s_camera(t_camera *cam, t_matrix *mx)
 	width_ratio = SCR_WIDTH / mx->width / 2;
 	height_ratio = SCR_HEIGHT / mx->height / 2;
 	cam->zoom = ft_min(width_ratio, height_ratio) + 1;
-	cam->init = true;
-	cam->alpha = 0;
-	cam->beta = 0;
-	cam->gamma = 0;
+	init_axis(cam);
 	cam->x_et = 0;
 	if (mx->depth_max > 50)
 	{
-		cam->y_et = -450;
-		cam->z_div = 0.08;
+		cam->y_et = -350;
+		cam->z_div = 0.05;
 	}
 	else
 	{
@@ -619,6 +598,82 @@ t_data	*alloc_s_data(void)
 	return (d);
 }
 
+int	close_key(t_data *d)
+{
+	free_all_array(d->mx);
+	free_all_struct(d);
+	mlx_destroy_window(d->mlx->init, d->mlx->win);
+	exit(EXIT_SUCCESS);
+}
+
+int	zoom_key(t_camera *cam, int key)
+{
+	if (key == KEY_PLUS)
+		cam->zoom++;
+	if (cam->zoom > 1 && key == KEY_MINUS)
+		cam->zoom--;
+}
+
+int	move_key(t_camera *cam, int key)
+{
+	if (key == KEY_H || key == KEY_LEFT)
+		cam->x_et -= 10;
+	if (key == KEY_J || key == KEY_DOWN)
+		cam->y_et += 10;
+	if (key == KEY_K || key == KEY_UP)
+		cam->y_et -= 10;
+	if (key == KEY_L || key == KEY_RIGHT)
+		cam->x_et += 10;
+}
+
+int	rotate_key(t_camera *cam, t_matrix *mx, int key)
+{
+	if (key == KEY_S)
+		cam->alpha += 0.05;
+	if (key == KEY_D)
+		cam->beta += 0.05;
+	if (key == KEY_F)
+		cam->gamma += 0.05;
+	if (key == KEY_W)
+		cam->alpha -= 0.05;
+	if (key == KEY_E)
+		cam->beta -= 0.05;
+	if (key == KEY_R)
+		cam->gamma -= 0.05;
+	if (key == KEY_U)
+		init_axis(cam);
+	if (key == KEY_C)
+		init_s_camera(cam, mx);
+}
+
+int	on_keydown(int key, t_data *d)
+{
+	if (key == KEY_ESC)
+		close_key(d);
+	zoom_key(&d->cam, key);
+	move_key(&d->cam, key);
+	rotate_key(&d->cam, d->mx, key);
+	rendering(d, d->mlx, d->mx);
+	return (0);
+}
+
+int	deal_key(int key, void *d)
+{
+	ft_printf("%d", key);
+	return (0);
+}
+
+void	key_operation(t_data *d, t_mlx *mlx)
+{
+	mlx_hook(mlx->win, 2, 0, on_keydown, d);
+	//mlx_hook(mlx->win, 3, 0, 0, d);
+	//mlx_hook(mlx->win, 4, 0, on_mouse_keydown, d);
+	//mlx_hook(mlx->win, 5, 0, 0, d);
+	mlx_hook(mlx->win, 17, 0, close_key, d);
+	//mlx_hook(mlx->win, 6, 0, 0, d);
+	//mlx_hook(mlx->win, 12, 0, 0, d);
+}
+
 int	main(int argc, char *argv[])
 {
 	t_data		*d;
@@ -630,6 +685,7 @@ int	main(int argc, char *argv[])
 	init_s_camera(&d->cam, d->mx);
 	init_s_mlx(d, d->mlx);
 	rendering(d, d->mlx, d->mx);
+	key_operation(d, d->mlx);
 	mlx_loop(d->mlx->init);
 	fdf_exit(d, NULL);
 }
