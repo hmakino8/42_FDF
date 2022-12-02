@@ -6,7 +6,7 @@
 /*   By: hiroaki <hiroaki@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/17 02:08:05 by hiroaki           #+#    #+#             */
-/*   Updated: 2022/12/02 21:36:40 by hiroaki          ###   ########.fr       */
+/*   Updated: 2022/12/02 22:45:55 by hiroaki          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,16 +75,13 @@ static t_pos	rotate(t_camera *cam, t_pos p)
 	prev_y = p.y;
 	p.y = prev_y * cos(cam->alpha) + p.z * sin(cam->alpha);
 	p.z = -prev_y * sin(cam->alpha) + p.z * cos(cam->alpha);
-
 	prev_x = p.x;
 	p.x = prev_x * cos(cam->beta) + p.z * sin(cam->beta);
 	p.z = -prev_x * sin(cam->beta) + p.z * cos(cam->beta);
-
 	prev_x = p.x;
 	prev_y = p.y;
 	p.x = prev_x * cos(cam->gamma) - prev_y * sin(cam->gamma);
 	p.y = prev_x * sin(cam->gamma) + prev_y * cos(cam->gamma);
-
 	if (cam->projection == INIT)
 	{
 		prev_x = p.x;
