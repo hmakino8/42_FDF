@@ -6,7 +6,7 @@
 /*   By: hiroaki <hiroaki@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/17 02:08:05 by hiroaki           #+#    #+#             */
-/*   Updated: 2022/12/02 15:50:00 by hiroaki          ###   ########.fr       */
+/*   Updated: 2022/12/02 17:55:20 by hiroaki          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -394,10 +394,13 @@ t_pos	rotate(t_camera *cam, t_pos p)
 	p.x = prev_x * cos(cam->gamma) - prev_y * sin(cam->gamma);
 	p.y = prev_x * sin(cam->gamma) + prev_y * cos(cam->gamma);
 
-	prev_x = p.x;
-	prev_y = p.y;
-	p.x = (prev_x - prev_y) * cos(0.523599);
-	p.y = -p.z + (prev_x + prev_y) * sin(0.523599);
+	if (cam->projection == INIT)
+	{
+		prev_x = p.x;
+		prev_y = p.y;
+		p.x = (prev_x - prev_y) * cos(0.523599);
+		p.y = -p.z + (prev_x + prev_y) * sin(0.523599);
+	}
 	return (p);
 }
 
@@ -497,12 +500,47 @@ void	draw_line(t_data *d, t_pos p)
 	}
 }
 
-void	put_menu(t_mlx *mlx)
+void	operation_key_menu1(t_mlx *mlx, int *x, int *y)
 {
-	mlx_string_put(mlx->init, mlx->win, 3, 60, 0xB0E0E6, \
-	"    U S A G E    ");
-	mlx_string_put(mlx->init, mlx->win, 3, 90, 0xE6E6FA, \
-	"zoom *------- \'+\'");
+	mlx_string_put(mlx->init, mlx->win, *x, *y, 0xB0E0E6, \
+	"     Operation Key     ");
+	mlx_string_put(mlx->init, mlx->win, *x, *y += 60, 0xE6E6FA, \
+	"- Exit       =>     ESC");
+	mlx_string_put(mlx->init, mlx->win, *x, *y += 50, 0xE6E6FA, \
+	"- Zoom       =>   + / -");
+	mlx_string_put(mlx->init, mlx->win, *x, *y += 50, 0xE6E6FA, \
+	"- Rotate");
+	mlx_string_put(mlx->init, mlx->win, *x, *y += 30, 0xE6E6FA, \
+	"   x axis    =>   S / W");
+	mlx_string_put(mlx->init, mlx->win, *x, *y += 30, 0xE6E6FA, \
+	"   y axis    =>   D / E");
+	mlx_string_put(mlx->init, mlx->win, *x, *y += 30, 0xE6E6FA, \
+	"   z axis    =>   F / R");
+}
+
+void	operation_key_menu2(t_mlx *mlx, int *x, int *y)
+{
+	mlx_string_put(mlx->init, mlx->win, *x, *y += 50, 0xE6E6FA, \
+	"- Adjust depth => < / >");
+	mlx_string_put(mlx->init, mlx->win, *x, *y += 50, 0xE6E6FA, \
+	"- Projection");
+	mlx_string_put(mlx->init, mlx->win, *x, *y += 30, 0xE6E6FA, \
+	"   default     =>     I");
+	mlx_string_put(mlx->init, mlx->win, *x, *y += 30, 0xE6E6FA, \
+	"   init axis   =>     U");
+	mlx_string_put(mlx->init, mlx->win, *x, *y += 30, 0xE6E6FA, \
+	"   parallel    =>     P");
+}
+
+void	put_menu(t_data *d, t_mlx *mlx)
+{
+	int	x;
+	int	y;
+
+	x = 10;
+	y = 50;
+	operation_key_menu1(mlx, &x, &y);
+	operation_key_menu2(mlx, &x, &y);
 }
 
 void	rendering(t_data *d, t_mlx *mlx, t_matrix *mx)
@@ -521,7 +559,7 @@ void	rendering(t_data *d, t_mlx *mlx, t_matrix *mx)
 		}
 	}
 	mlx_put_image_to_window(mlx->init, mlx->win, mlx->img, 0, 0);
-	put_menu(mlx);
+	put_menu(d, mlx);
 }
 
 void	init_s_mlx(t_data *d, t_mlx *mlx)
@@ -563,7 +601,7 @@ void	init_s_camera(t_camera *cam, t_matrix *mx)
 	cam->x_et = 0;
 	if (mx->depth_max > 50)
 	{
-		cam->y_et = -350;
+		cam->y_et = -500;
 		cam->z_div = 0.05;
 	}
 	else
@@ -571,6 +609,7 @@ void	init_s_camera(t_camera *cam, t_matrix *mx)
 		cam->y_et = -100;
 		cam->z_div = 0.8;
 	}
+	cam->projection = INIT;
 }
 
 void	init_s_matrix(t_matrix *mx)
@@ -634,7 +673,7 @@ int	move_key(t_camera *cam, int key)
 		cam->x_et += 10;
 }
 
-int	rotate_key(t_camera *cam, t_matrix *mx, int key)
+int	rotate_key(t_camera *cam, int key)
 {
 	if (key == KEY_S)
 		cam->alpha += 0.05;
@@ -648,10 +687,30 @@ int	rotate_key(t_camera *cam, t_matrix *mx, int key)
 		cam->beta -= 0.05;
 	if (key == KEY_R)
 		cam->gamma -= 0.05;
-	if (key == KEY_U)
+}
+
+int	projection_key(t_camera *cam, t_matrix *mx, int key)
+{
+	if (key == KEY_P)
+	{
 		init_axis(cam);
-	if (key == KEY_C)
+		cam->projection = PARALLEL;
+	}
+	if (key == KEY_U)
+	{
+		init_axis(cam);
+		cam->projection = INIT;
+	}
+	if (key == KEY_I)
 		init_s_camera(cam, mx);
+}
+
+int	adjust_depth_key(t_camera *cam, int key)
+{
+	if (key == KEY_LESS)
+		cam->z_div -= 0.1;
+	if (key == KEY_GRATER)
+		cam->z_div += 0.1;
 }
 
 int	on_keydown(int key, t_data *d)
@@ -660,7 +719,9 @@ int	on_keydown(int key, t_data *d)
 		close_key(d);
 	zoom_key(&d->cam, key);
 	move_key(&d->cam, key);
-	rotate_key(&d->cam, d->mx, key);
+	rotate_key(&d->cam, key);
+	adjust_depth_key(&d->cam, key);
+	projection_key(&d->cam, d->mx, key);
 	rendering(d, d->mlx, d->mx);
 	return (0);
 }
