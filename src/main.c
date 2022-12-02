@@ -6,7 +6,7 @@
 /*   By: hiroaki <hiroaki@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/17 02:08:05 by hiroaki           #+#    #+#             */
-/*   Updated: 2022/12/02 15:12:07 by hiroaki          ###   ########.fr       */
+/*   Updated: 2022/12/02 15:50:00 by hiroaki          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -293,35 +293,43 @@ t_pos	get_menu_color(t_pos cur)
 	int		mc;
 	double	ratio;
 
-	if (!cur.x)
-		cur.c.color = NO_COLOR;
-	else if (cur.x <= MENU_WIDTH)
+	if (cur.x <= MENU_WIDTH)
 	{
-		ratio = 0.01;
-		mc = BLACKDIAMOND;
-		cur.c.red = \
-		(cur.c.red >> 16 & 0xFF) * (1 - ratio) + (mc >> 16 & 0xFF) * ratio;
-		cur.c.green = \
-		(cur.c.green >> 8 & 0xFF) * (1 - ratio) + (mc >> 8 & 0xFF) * ratio;
-		cur.c.blue = \
-		(cur.c.blue & 0xFF) * (1 - ratio) + (mc & 0xFF) * ratio;
+		ratio = 0.3;
+		cur.c.red *= ratio;
+		cur.c.green *= ratio;
+		cur.c.blue *= ratio;
 		cur.c.color = (cur.c.red << 16 | (cur.c.green << 8) | cur.c.blue);
 	}
 	return (cur);
 }
 
-t_pos	get_color(t_pos st, t_pos cur, t_pos to, double ratio)
+t_pos	get_color(t_pos st, t_pos cur, t_pos to, double rt)
 {
 	int		sc;
 	int		tc;
+	double	a;
 
 	sc = st.c.color;
 	tc = to.c.color;
-	cur.c.red = (sc >> 16 & 0xFF) * (1 - ratio) + (tc >> 16 & 0xFF) * ratio;
-	cur.c.green = (sc >> 8 & 0xFF) * (1 - ratio) + (tc >> 8 & 0xFF) * ratio;
-	cur.c.blue = (sc & 0xFF) * (1 - ratio) + (tc & 0xFF) * ratio;
+	if (cur.x <= MENU_WIDTH)
+		a = 0.5;
+	else
+		a = 1;
+	if (cur.c.color != to.c.color)
+	{
+		cur.c.red = ((sc >> 16 & 0xFF) * (1 - rt) + (tc >> 16 & 0xFF) * rt) * a;
+		cur.c.green = ((sc >> 8 & 0xFF) * (1 - rt) + (tc >> 8 & 0xFF) * rt) * a;
+		cur.c.blue = ((sc & 0xFF) * (1 - rt) + (tc & 0xFF) * rt) * a;
+	}
+	else
+	{
+		cur.c.red = (cur.c.color >> 16 & 0xFF) * a;
+		cur.c.green = (cur.c.color >> 8 & 0xFF) * a;
+		cur.c.blue = (cur.c.color & 0xFF) * a;
+	}
 	cur.c.color = (cur.c.red << 16 | (cur.c.green << 8) | cur.c.blue);
-	return (get_menu_color(cur));
+	return (cur);
 }
 
 void	bresenham(t_data *d, t_pos st, t_pos to)
@@ -340,7 +348,7 @@ void	bresenham(t_data *d, t_pos st, t_pos to)
 	cur = st;
 	while (cur.x != to.x || cur.y != to.y)
 	{
-		if (!cur.c.map_color && cur.c.color != to.c.color)
+		if (!cur.c.map_color)
 		{
 			ratio = get_color_ratio(delta, st, cur, to);
 			cur = get_color(st, cur, to, ratio);
@@ -550,7 +558,7 @@ void	init_s_camera(t_camera *cam, t_matrix *mx)
 
 	width_ratio = SCR_WIDTH / mx->width / 2;
 	height_ratio = SCR_HEIGHT / mx->height / 2;
-	cam->zoom = ft_min(width_ratio, height_ratio) + 1;
+	cam->zoom = ft_min(width_ratio, height_ratio) + 2;
 	init_axis(cam);
 	cam->x_et = 0;
 	if (mx->depth_max > 50)
@@ -657,21 +665,10 @@ int	on_keydown(int key, t_data *d)
 	return (0);
 }
 
-int	deal_key(int key, void *d)
-{
-	ft_printf("%d", key);
-	return (0);
-}
-
 void	key_operation(t_data *d, t_mlx *mlx)
 {
 	mlx_hook(mlx->win, 2, 0, on_keydown, d);
-	//mlx_hook(mlx->win, 3, 0, 0, d);
-	//mlx_hook(mlx->win, 4, 0, on_mouse_keydown, d);
-	//mlx_hook(mlx->win, 5, 0, 0, d);
 	mlx_hook(mlx->win, 17, 0, close_key, d);
-	//mlx_hook(mlx->win, 6, 0, 0, d);
-	//mlx_hook(mlx->win, 12, 0, 0, d);
 }
 
 int	main(int argc, char *argv[])
