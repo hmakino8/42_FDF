@@ -6,7 +6,7 @@
 /*   By: hiroaki <hiroaki@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/02 17:30:41 by hiroaki           #+#    #+#             */
-/*   Updated: 2022/11/26 02:59:11 by hiroaki          ###   ########.fr       */
+/*   Updated: 2022/12/02 01:07:44 by hiroaki          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,6 @@ char	**ft_split(char *s, char c, int *cnt)
 {
 	char	**split;
 
-	split = NULL;
 	if (!s)
 		return (NULL);
 	*cnt = element_cnt(s, c);

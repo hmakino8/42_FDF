@@ -6,12 +6,11 @@
 /*   By: hiroaki <hiroaki@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/01 23:44:45 by hiroaki           #+#    #+#             */
-/*   Updated: 2022/11/30 04:12:42 by hiroaki          ###   ########.fr       */
+/*   Updated: 2022/12/02 21:23:27 by hiroaki          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/fdf.h"
-#include <stdio.h>
 
 static bool	is_overflow(unsigned long num, int sign)
 {
@@ -21,7 +20,7 @@ static bool	is_overflow(unsigned long num, int sign)
 	return (false);
 }
 
-static bool	is_valid_base(char *str, int base, bool *ok)
+static bool	is_valid_base(char *str, int base)
 {
 	if (base == 16)
 	{
@@ -80,7 +79,7 @@ int	ft_atoi_base(char *str, int base, bool *ok)
 
 	sign = 1;
 	*ok = false;
-	if (!str || !is_valid_base(str, base, ok))
+	if (!str || !is_valid_base(str, base))
 		return (-1);
 	else if (base == 16)
 		str += 2;
