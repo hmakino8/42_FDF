@@ -6,7 +6,7 @@
 /*   By: hiroaki <hiroaki@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/01 23:44:45 by hiroaki           #+#    #+#             */
-/*   Updated: 2022/12/02 21:23:27 by hiroaki          ###   ########.fr       */
+/*   Updated: 2022/12/04 02:13:12 by hiroaki          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,8 @@
 
 static bool	is_overflow(unsigned long num, int sign)
 {
-	if ((sign > 0 && num > LONG_MAX) || \
-		(sign < 0 && num > (LONG_MAX + 1UL)))
+	if ((sign > 0 && num > INT_MAX) || \
+		(sign < 0 && num > (INT_MAX + 1UL)))
 		return (true);
 	return (false);
 }

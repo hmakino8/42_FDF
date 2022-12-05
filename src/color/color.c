@@ -6,7 +6,7 @@
 /*   By: hiroaki <hiroaki@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/17 02:08:05 by hiroaki           #+#    #+#             */
-/*   Updated: 2022/12/02 21:28:16 by hiroaki          ###   ########.fr       */
+/*   Updated: 2022/12/05 20:41:03 by hiroaki          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ t_pos	get_color(t_pos st, t_pos cur, t_pos to, double rt)
 	sc = st.c.color;
 	tc = to.c.color;
 	if (cur.x <= MENU_WIDTH)
-		a = 0.5;
+		a = 0.4;
 	else
 		a = 1;
 	if (cur.c.color != to.c.color)

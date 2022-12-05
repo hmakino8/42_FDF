@@ -6,7 +6,7 @@
 /*   By: hiroaki <hiroaki@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/17 02:08:05 by hiroaki           #+#    #+#             */
-/*   Updated: 2022/12/02 22:33:10 by hiroaki          ###   ########.fr       */
+/*   Updated: 2022/12/03 22:33:14 by hiroaki          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@ static int	close_key(t_data *d)
 	mlx_destroy_window(d->mlx->init, d->mlx->win);
 	free_all_array(d->mx);
 	free_all_struct(d);
+	//system("leaks -q fdf");
 	exit(EXIT_SUCCESS);
 }
 

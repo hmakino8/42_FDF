@@ -6,7 +6,7 @@
 /*   By: hiroaki <hiroaki@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/17 02:08:05 by hiroaki           #+#    #+#             */
-/*   Updated: 2022/12/02 22:45:55 by hiroaki          ###   ########.fr       */
+/*   Updated: 2022/12/05 21:02:43 by hiroaki          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,20 +49,19 @@ void	bresenham(t_data *d, t_pos st, t_pos to)
 	t_pos	delta;
 	t_pos	sign;
 
-	delta.x = ft_abs(to.x - st.x);
-	delta.y = ft_abs(to.y - st.y);
+	delta.x = ft_abs(to.x, st.x);
+	delta.y = ft_abs(to.y, st.y);
+	check_delta(d, delta);
 	sign.x = (st.x < to.x) - (st.x >= to.x);
 	sign.y = (st.y < to.y) - (st.y >= to.y);
 	error[0] = delta.x - delta.y;
 	cur = st;
 	while (cur.x != to.x || cur.y != to.y)
 	{
-		if (!cur.c.map_color)
-		{
-			ratio = get_color_ratio(delta, st, cur, to);
-			cur = get_color(st, cur, to, ratio);
-		}
+		ratio = get_color_ratio(delta, st, cur, to);
+		cur = get_color(st, cur, to, ratio);
 		draw_colored_line(d->mlx, cur);
+		check_error(d, error[0]);
 		cur = relocate_pos(error, cur, delta, sign);
 	}
 }
@@ -105,7 +104,7 @@ t_pos	reset_pos(t_data *d, t_pos p)
 		p.c.map_color = true;
 	p.x *= d->cam.zoom;
 	p.y *= d->cam.zoom;
-	p.z *= d->cam.zoom * d->cam.z_div;
+	p.z = check_z_axis(d, p.z);
 	p.x -= (d->mx->width * d->cam.zoom) / 2;
 	p.y -= (d->mx->height * d->cam.zoom) / 2;
 	p = rotate(&d->cam, p);

@@ -6,7 +6,7 @@
 /*   By: hiroaki <hiroaki@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/10 19:08:02 by hmakino           #+#    #+#             */
-/*   Updated: 2022/12/02 21:46:53 by hiroaki          ###   ########.fr       */
+/*   Updated: 2022/12/05 21:10:35 by hiroaki          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@
  */
 # define SCR_HEIGHT 1080
 # define SCR_WIDTH 1920
-# define MENU_WIDTH 250
+# define MENU_WIDTH 270
 
 /*
  * Projection
@@ -73,7 +73,6 @@
 /*
  * Main alphabet key
  */
-# define KEY_A			0
 # define KEY_E			14
 # define KEY_S			1
 # define KEY_D			2
@@ -123,10 +122,10 @@ typedef struct s_color
 
 typedef struct s_pos
 {
-	int		x;
-	int		y;
-	int		z;
-	t_color	c;
+	long		x;
+	long		y;
+	long		z;
+	t_color		c;
 }	t_pos;
 
 typedef struct s_camera
@@ -191,10 +190,11 @@ void	parse_line(t_data *d, t_matrix *mx, int i);
 /* exit.c */
 void	free_all_struct(t_data *d);
 void	free_all_array(t_matrix *mx);
+void	stop_rendering(t_data *d, char *errmsg);
 void	fdf_exit(t_data *d, char *errmsg);
 /* alloc.c */
-void	alloc_arr(t_data *d, t_matrix *mx);
 t_data	*alloc_s_data(void);
+void	alloc_arr(t_data *d, t_matrix *mx);
 
 /* * * * * * * *
  *  color dir  *
@@ -241,13 +241,16 @@ int		adjust_depth_key(t_camera *cam, int key);
 /* ft_atoi_base.c */
 int		ft_atoi_base(char *str, int base, bool *ok);
 /* ft_abs.c */
-int		ft_abs(int diff);
+int		ft_abs(long long a, long long b);
 /* ft_max.c */
 int		ft_max(int a, int b);
 /* ft_min.c */
 int		ft_min(int a, int b);
 /* check.c */
+int		check_z_axis(t_data *d, int z);
 void	check_argc(t_data *d, int argc);
 void	check_width(t_data *d, t_matrix *mx, int *width);
+void	check_delta(t_data *d, t_pos delta);
+void	check_error(t_data *d, int error);
 
 #endif

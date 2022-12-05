@@ -6,7 +6,7 @@
 /*   By: hiroaki <hiroaki@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/17 02:08:05 by hiroaki           #+#    #+#             */
-/*   Updated: 2022/12/02 21:08:20 by hiroaki          ###   ########.fr       */
+/*   Updated: 2022/12/05 19:22:36 by hiroaki          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,3 +27,8 @@ int	main(int argc, char *argv[])
 	mlx_loop(d->mlx->init);
 	fdf_exit(d, NULL);
 }
+
+//__attribute__((destructor)) static void destructor()
+//{
+//	system("leaks -q fdf");
+//}
