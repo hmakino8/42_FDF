@@ -6,11 +6,12 @@
 #    By: hiroaki <hiroaki@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/04/03 05:02:19 by hmakino           #+#    #+#              #
-#    Updated: 2022/11/19 02:43:14 by hiroaki          ###   ########.fr        #
+#    Updated: 2022/12/09 18:25:01 by hiroaki          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME		=	libftprint.a
+CFLAGS		=	-Wall -Wextra -Werror -I$(INC)
 
 PRINT		=	ft_print.c \
 				init.c \
@@ -19,8 +20,7 @@ PRINT		=	ft_print.c \
 				output.c
 
 OBJS		=	$(PRINT:.c=.o)
-
-CFLAGS		=	-Wall -Wextra -Werror
+INC			=	../../include
 
 $(NAME):	$(OBJS)
 			ar rcs $(NAME) $(OBJS)

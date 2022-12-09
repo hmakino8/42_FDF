@@ -6,12 +6,12 @@
 #    By: hiroaki <hiroaki@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/02/06 17:10:58 by hiroaki           #+#    #+#              #
-#    Updated: 2022/11/27 01:28:58 by hiroaki          ###   ########.fr        #
+#    Updated: 2022/12/09 18:24:14 by hiroaki          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME			=	libft.a
-CFLAGS			=	-Wall -Wextra -Werror
+CFLAGS			=	-Wall -Wextra -Werror -I$(INC)
 
 SRCS			=	ft_isdigit.c \
 					ft_isspace.c \
@@ -29,6 +29,7 @@ SRCS			=	ft_isdigit.c \
 					ft_strncmp.c
 
 OBJS			=	$(SRCS:.c=.o)
+INC				=	../../include
 
 all:			$(NAME)
 

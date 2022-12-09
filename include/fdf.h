@@ -6,7 +6,7 @@
 /*   By: hiroaki <hiroaki@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/10 19:08:02 by hmakino           #+#    #+#             */
-/*   Updated: 2022/12/09 18:03:15 by hiroaki          ###   ########.fr       */
+/*   Updated: 2022/12/09 18:33:02 by hiroaki          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,10 +16,10 @@
 # include <stdio.h>
 # include <stdbool.h>
 # include <math.h>
-# include "../minilibx_macos/mlx.h"
-# include "../libs/include/libft.h"
-# include "../libs/include/ft_print.h"
-# include "../libs/include/get_next_line.h"
+# include "../minilibx-linux/mlx.h"
+# include "libft.h"
+# include "ft_print.h"
+# include "get_next_line.h"
 
 /*
  * Output

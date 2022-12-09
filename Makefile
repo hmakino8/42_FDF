@@ -6,12 +6,12 @@
 #    By: hiroaki <hiroaki@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/11/15 03:03:24 by hiroaki           #+#    #+#              #
-#    Updated: 2022/12/09 17:59:58 by hiroaki          ###   ########.fr        #
+#    Updated: 2022/12/09 18:29:24 by hiroaki          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME			=	fdf
-FLAGS			=	-Wall -Wextra -Werror #-g -fsanitize=address -fsanitize=integer -fsanitize=undefined
+FLAGS			=	-Wall -Wextra -Werror -I$(INC) #-g -fsanitize=address -fsanitize=integer -fsanitize=undefined
 
 SRCS			=	main/main.c \
 					init/init.c \
@@ -36,6 +36,7 @@ SRCS			=	main/main.c \
 SRCS_PATH		= 	$(addprefix src/, $(SRCS))
 OBJS_PATH		=	$(SRCS_PATH:%.c=%.o)
 MLX_PATH		=	./minilibx-linux/
+INC				=	./include/
 
 all: 			$(NAME)
 
