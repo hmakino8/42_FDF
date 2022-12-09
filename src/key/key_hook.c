@@ -6,7 +6,7 @@
 /*   By: hiroaki <hiroaki@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/17 02:08:05 by hiroaki           #+#    #+#             */
-/*   Updated: 2022/12/09 16:42:09 by hiroaki          ###   ########.fr       */
+/*   Updated: 2022/12/09 17:41:07 by hiroaki          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,6 @@ static int	on_keydown(int key, t_data *d)
 {
 	if (key == KEY_ESC)
 		close_key(d);
-	dprintf(1,"\n%d\n",key);
 	zoom_key(&d->cam, key);
 	move_key(&d->cam, key);
 	rotate_key(&d->cam, key);
@@ -36,5 +35,5 @@ static int	on_keydown(int key, t_data *d)
 void	key_hook(t_data *d, t_mlx *mlx)
 {
 	mlx_hook(mlx->win, 2, (1L << 0), on_keydown, d);
-	mlx_hook(mlx->win, 17, 0, close_key, d);
+	mlx_hook(mlx->win, 17, (1L << 0), close_key, d);
 }

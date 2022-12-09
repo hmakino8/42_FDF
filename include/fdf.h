@@ -6,7 +6,7 @@
 /*   By: hiroaki <hiroaki@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/10 19:08:02 by hmakino           #+#    #+#             */
-/*   Updated: 2022/12/09 17:27:26 by hiroaki          ###   ########.fr       */
+/*   Updated: 2022/12/09 18:03:15 by hiroaki          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@
  */
 # define SCR_HEIGHT	1080
 # define SCR_WIDTH	1920
-# define MENU_WIDTH	270
+# define MENU_WIDTH	180
 
 /*
  * Projection
@@ -93,6 +93,7 @@ typedef struct s_matrix
 	int		**coord;
 	int		**color;
 	char	*line;
+	char	*gnl;
 	char	**elem;
 	char	**coord_info;
 }	t_matrix;

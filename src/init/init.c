@@ -6,7 +6,7 @@
 /*   By: hiroaki <hiroaki@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/17 02:08:05 by hiroaki           #+#    #+#             */
-/*   Updated: 2022/12/07 20:48:50 by hiroaki          ###   ########.fr       */
+/*   Updated: 2022/12/09 17:36:46 by hiroaki          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,10 +38,10 @@ void	init_s_mlx(t_data *d, t_mlx *mlx)
 	mlx_get_data_addr(mlx->img, &mlx->bpp, &mlx->size_line, &mlx->endian);
 	if (!mlx->init || !mlx->win || !mlx->img || !mlx->data_addr)
 	{
-		free(mlx->init);
-		free(mlx->win);
-		free(mlx->img);
+		mlx_destroy_window(mlx->init, mlx->win);
+		mlx_destroy_image(mlx->init, mlx->img);
 		free(mlx->data_addr);
+		free(mlx->init);
 		fdf_exit(d, "Malloc Failure");
 	}
 }
@@ -78,6 +78,7 @@ void	init_s_matrix(t_matrix *mx)
 	mx->coord_infocnt = 0;
 	mx->elem = NULL;
 	mx->line = NULL;
+	mx->gnl = NULL;
 	mx->coord = NULL;
 	mx->color = NULL;
 	mx->coord_info = NULL;

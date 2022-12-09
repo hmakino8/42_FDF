@@ -6,7 +6,7 @@
 /*   By: hiroaki <hiroaki@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/17 02:08:05 by hiroaki           #+#    #+#             */
-/*   Updated: 2022/12/07 14:18:41 by hiroaki          ###   ########.fr       */
+/*   Updated: 2022/12/09 17:43:06 by hiroaki          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,16 +63,15 @@ static void	init_matrix(t_data *d, t_matrix *mx, char *filename)
 	int	fd;
 	int	width;
 	int	signal;
-	char *gnl;
 
 	init_fd(d, &fd, filename);
 	width = 0;
 	i = -1;
 	while (1)
 	{
-		gnl = get_next_line(fd, &signal);
-		mx->line = ft_strtrim(gnl, "\n ");
-		free(gnl);
+		mx->gnl = get_next_line(fd, &signal);
+		mx->line = ft_strtrim(mx->gnl, "\n ");
+		free(mx->gnl);
 		if (signal == END_OF_FILE)
 			return ;
 		mx->elem = ft_split(mx->line, ' ', &mx->width);
