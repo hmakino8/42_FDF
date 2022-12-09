@@ -6,7 +6,7 @@
 /*   By: hiroaki <hiroaki@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/10 19:08:02 by hmakino           #+#    #+#             */
-/*   Updated: 2022/12/05 21:10:35 by hiroaki          ###   ########.fr       */
+/*   Updated: 2022/12/09 17:27:26 by hiroaki          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,77 +24,63 @@
 /*
  * Output
  */
-# define STD_OUT 1
-# define STD_ERROR 2
+# define STD_OUT	1
+# define STD_ERROR	2
 
 /*
  * Width/Height
  */
-# define SCR_HEIGHT 1080
-# define SCR_WIDTH 1920
-# define MENU_WIDTH 270
+# define SCR_HEIGHT	1080
+# define SCR_WIDTH	1920
+# define MENU_WIDTH	270
 
 /*
  * Projection
  */
-# define INIT 1
-# define PARALLEL 2
+# define INIT		1
+# define PARALLEL	2
 
 /*
  * Color
  */
-# define NO_COLOR 0x0
-# define DEEPPINK 0xFF1493
-# define INDIGO 0x165E83
-# define BLACKDIAMOND 0x252A2D
+# define NO_COLOR		0x0
+# define DEEPPINK		0xFF1493
+# define INDIGO			0x165E83
+# define BLACKDIAMOND	0x252A2D
 
 /*
  * Direction key
  */
-# define KEY_UP		126
-# define KEY_DOWN	125
-# define KEY_LEFT	123
-# define KEY_RIGHT	124
-
-/*
- * Main mum key
- */
-# define KEY_0			29
-# define KEY_1			18
-# define KEY_2			19
-# define KEY_3			20
-# define KEY_4			21
-# define KEY_5			23
-# define KEY_6			22
-# define KEY_7			26
-# define KEY_8			28
-# define KEY_9			25
+# define KEY_UP		0xFF52
+# define KEY_DOWN	0xFF54
+# define KEY_LEFT	0xFF51
+# define KEY_RIGHT	0xFF53
 
 /*
  * Main alphabet key
  */
-# define KEY_E			14
-# define KEY_S			1
-# define KEY_D			2
-# define KEY_F			3
-# define KEY_H			4
-# define KEY_I			34
-# define KEY_J			38
-# define KEY_K			40
-# define KEY_L			37
-# define KEY_R			15
-# define KEY_P			35
-# define KEY_U			32
-# define KEY_W			13
+# define KEY_E	0x0065
+# define KEY_S	0x0073
+# define KEY_D	0x0064
+# define KEY_F	0x0066
+# define KEY_H	0x0068
+# define KEY_I	0x0069
+# define KEY_J	0x006A
+# define KEY_K	0x006B
+# define KEY_L	0x006C
+# define KEY_R	0x0072
+# define KEY_P	0x0070
+# define KEY_U	0x0075
+# define KEY_W	0x0077
 
 /*
  * Main symbol key
  */
-# define KEY_ESC		53
-# define KEY_PLUS		24
-# define KEY_MINUS		27
-# define KEY_LESS		43
-# define KEY_GRATER		47
+# define KEY_ESC	0xFF1B
+# define KEY_PLUS	0x003D
+# define KEY_MINUS 	0x002D
+# define KEY_LESS 	0x002C
+# define KEY_GRATER	0x002E
 
 typedef struct s_matrix
 {
@@ -188,10 +174,10 @@ void	parse_line(t_data *d, t_matrix *mx, int i);
  * * * * * * * */
 
 /* exit.c */
+int		fdf_exit(t_data *d, char *errmsg);
 void	free_all_struct(t_data *d);
 void	free_all_array(t_matrix *mx);
 void	stop_rendering(t_data *d, char *errmsg);
-void	fdf_exit(t_data *d, char *errmsg);
 /* alloc.c */
 t_data	*alloc_s_data(void);
 void	alloc_arr(t_data *d, t_matrix *mx);

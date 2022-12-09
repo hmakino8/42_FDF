@@ -6,12 +6,12 @@
 #    By: hiroaki <hiroaki@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/11/15 03:03:24 by hiroaki           #+#    #+#              #
-#    Updated: 2022/12/05 21:06:57 by hiroaki          ###   ########.fr        #
+#    Updated: 2022/12/09 14:55:53 by hiroaki          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME			=	fdf
-FLAGS			=	-Wall -Wextra -Werror #-g -fsanitize=address -fsanitize=integer -fsanitize=undefined
+FLAGS			=	-Wall -Wextra -Werror#-g -fsanitize=address -fsanitize=integer -fsanitize=undefined
 
 SRCS			=	main/main.c \
 					init/init.c \
@@ -35,6 +35,7 @@ SRCS			=	main/main.c \
 
 SRCS_PATH		= 	$(addprefix src/, $(SRCS))
 OBJS_PATH		=	$(SRCS_PATH:%.c=%.o)
+MLX_PATH		=	./minilibx-linux/
 
 all: 			$(NAME)
 
@@ -42,19 +43,23 @@ $(NAME):		$(OBJS_PATH) $(LIBFT) $(PRINT) $(GNL)
 				$(MAKE) -C libs/libft
 				$(MAKE) -C libs/ft_print
 				$(MAKE) -C libs/gnl
-				$(MAKE) -C minilibx_macos
-				$(CC) $(FLAGS) $(SRCS_PATH) $(LIBFT) $(PRINT) $(GNL) $(MLX) -L/usr/X11R6/lib -lX11 -lXext -framework OpenGL -framework AppKit  -o $(NAME)
+				$(MAKE) -C minilibx-linux
+				$(CC) $(FLAGS) $(MLX) $(OBJS_PATH) $(LIBFT) $(PRINT) $(GNL) -L/usr/lib -I$(MLX_PATH) -lXext -lX11 -lm -lz -o $(NAME)
+				#for linux ver
+
+				#$(CC) $(FLAGS) $(OBJS_PATH) $(LIBFT) $(PRINT) $(GNL) -L$(MLX_PATH) -lmlx -framework OpenGL -framework AppKit -o $(NAME)
+				#for macos ver
 
 LIBFT			=	libs/libft/libft.a
 PRINT			=	libs/ft_print/libftprint.a
 GNL				=	libs/gnl/libftgnl.a
-MLX				=	minilibx_macos/libmlx.a
+MLX				=	$(MLX_PATH)libmlx_darwin.a
 
 clean:
 				$(MAKE) -C libs/libft clean
 				$(MAKE) -C libs/ft_print clean
 				$(MAKE) -C libs/gnl clean
-				$(MAKE) -C minilibx_macos clean
+				$(MAKE) -C minilibx-linux clean
 				$(RM) $(OBJS_PATH)
 
 fclean:			clean

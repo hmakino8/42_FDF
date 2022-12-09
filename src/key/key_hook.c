@@ -6,7 +6,7 @@
 /*   By: hiroaki <hiroaki@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/17 02:08:05 by hiroaki           #+#    #+#             */
-/*   Updated: 2022/12/03 22:33:14 by hiroaki          ###   ########.fr       */
+/*   Updated: 2022/12/09 16:42:09 by hiroaki          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,16 +15,15 @@
 static int	close_key(t_data *d)
 {
 	mlx_destroy_window(d->mlx->init, d->mlx->win);
-	free_all_array(d->mx);
-	free_all_struct(d);
-	//system("leaks -q fdf");
-	exit(EXIT_SUCCESS);
+	mlx_destroy_image(d->mlx->init, d->mlx->img);
+	return (fdf_exit(d, NULL));
 }
 
 static int	on_keydown(int key, t_data *d)
 {
 	if (key == KEY_ESC)
 		close_key(d);
+	dprintf(1,"\n%d\n",key);
 	zoom_key(&d->cam, key);
 	move_key(&d->cam, key);
 	rotate_key(&d->cam, key);
@@ -36,6 +35,6 @@ static int	on_keydown(int key, t_data *d)
 
 void	key_hook(t_data *d, t_mlx *mlx)
 {
-	mlx_hook(mlx->win, 2, 0, on_keydown, d);
+	mlx_hook(mlx->win, 2, (1L << 0), on_keydown, d);
 	mlx_hook(mlx->win, 17, 0, close_key, d);
 }

@@ -6,7 +6,7 @@
 /*   By: hiroaki <hiroaki@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/17 02:08:05 by hiroaki           #+#    #+#             */
-/*   Updated: 2022/12/05 18:31:05 by hiroaki          ###   ########.fr       */
+/*   Updated: 2022/12/07 03:13:25 by hiroaki          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,8 @@ void	parse_line(t_data *d, t_matrix *mx, int i)
 			fdf_exit(d, "Height difference in depth exceeds the range of int.");
 		get_color_code(d, mx, i, j);
 		free_all_element((void **)mx->coord_info, mx->coord_infocnt);
-		mx->coord_info = NULL;
+		free(mx->elem[j]);
 	}
+		free(mx->elem);
+	//free_all_element((void **)mx->elem, j + 1);
 }

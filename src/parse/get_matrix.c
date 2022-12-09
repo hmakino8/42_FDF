@@ -6,7 +6,7 @@
 /*   By: hiroaki <hiroaki@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/17 02:08:05 by hiroaki           #+#    #+#             */
-/*   Updated: 2022/12/05 16:52:23 by hiroaki          ###   ########.fr       */
+/*   Updated: 2022/12/07 14:18:41 by hiroaki          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,8 @@ static void	get_height(t_data *d, t_matrix *mx, int *signal, int fd)
 	if (!mx->line)
 		fdf_exit(d, "Failed to read map");
 	mx->height++;
+	free(mx->line);
+	mx->line = NULL;
 }
 
 static void	get_width(t_matrix *mx)
@@ -61,13 +63,16 @@ static void	init_matrix(t_data *d, t_matrix *mx, char *filename)
 	int	fd;
 	int	width;
 	int	signal;
+	char *gnl;
 
 	init_fd(d, &fd, filename);
 	width = 0;
 	i = -1;
 	while (1)
 	{
-		mx->line = ft_strtrim(get_next_line(fd, &signal), "\n ");
+		gnl = get_next_line(fd, &signal);
+		mx->line = ft_strtrim(gnl, "\n ");
+		free(gnl);
 		if (signal == END_OF_FILE)
 			return ;
 		mx->elem = ft_split(mx->line, ' ', &mx->width);
@@ -76,6 +81,7 @@ static void	init_matrix(t_data *d, t_matrix *mx, char *filename)
 			fdf_exit(d, "Failed to read map");
 		parse_line(d, mx, ++i);
 		free(mx->line);
+		mx->line = NULL;
 	}
 	close(fd);
 }

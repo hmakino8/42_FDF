@@ -6,7 +6,7 @@
 /*   By: hiroaki <hiroaki@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/02 17:30:41 by hiroaki           #+#    #+#             */
-/*   Updated: 2022/12/02 01:07:44 by hiroaki          ###   ########.fr       */
+/*   Updated: 2022/12/07 02:37:51 by hiroaki          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@ void	free_all_element(void **v, int cnt)
 		v[i] = NULL;
 	}
 	free(v);
+	v = NULL;
 }
 
 static size_t	element_cnt(char const *s, char c)
