@@ -6,7 +6,7 @@
 /*   By: hiroaki <hiroaki@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/17 02:08:05 by hiroaki           #+#    #+#             */
-/*   Updated: 2022/12/09 18:27:07 by hiroaki          ###   ########.fr       */
+/*   Updated: 2022/12/10 16:03:34 by hiroaki          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,25 +29,20 @@ t_pos	get_color(t_pos st, t_pos cur, t_pos to, double rt)
 {
 	int		sc;
 	int		tc;
-	double	a;
 
 	sc = st.c.color;
 	tc = to.c.color;
-	if (cur.x <= MENU_WIDTH)
-		a = 0.4;
-	else
-		a = 1;
 	if (cur.c.color != to.c.color)
 	{
-		cur.c.red = ((sc >> 16 & 0xFF) * (1 - rt) + (tc >> 16 & 0xFF) * rt) * a;
-		cur.c.green = ((sc >> 8 & 0xFF) * (1 - rt) + (tc >> 8 & 0xFF) * rt) * a;
-		cur.c.blue = ((sc & 0xFF) * (1 - rt) + (tc & 0xFF) * rt) * a;
+		cur.c.red = ((sc >> 16 & 0xFF) * (1 - rt) + (tc >> 16 & 0xFF) * rt);
+		cur.c.green = ((sc >> 8 & 0xFF) * (1 - rt) + (tc >> 8 & 0xFF) * rt);
+		cur.c.blue = ((sc & 0xFF) * (1 - rt) + (tc & 0xFF) * rt);
 	}
 	else
 	{
-		cur.c.red = (cur.c.color >> 16 & 0xFF) * a;
-		cur.c.green = (cur.c.color >> 8 & 0xFF) * a;
-		cur.c.blue = (cur.c.color & 0xFF) * a;
+		cur.c.red = (cur.c.color >> 16 & 0xFF);
+		cur.c.green = (cur.c.color >> 8 & 0xFF);
+		cur.c.blue = (cur.c.color & 0xFF);
 	}
 	cur.c.color = (cur.c.red << 16 | (cur.c.green << 8) | cur.c.blue);
 	return (cur);
@@ -93,7 +88,7 @@ t_pos	get_original_color(t_data *d, t_pos p)
 	top.c.color = DEEPPINK;
 	btm.c.color = INDIGO;
 	ratio = (double)(p.z - z_min) / (z_max - z_min);
-	if (z_min > -20)
+	if (ft_abs(z_min, z_max) <= 50)
 	{
 		if (p.z == z_max)
 			p.c.color = top.c.color;

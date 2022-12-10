@@ -6,7 +6,7 @@
 /*   By: hiroaki <hiroaki@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/17 02:08:05 by hiroaki           #+#    #+#             */
-/*   Updated: 2022/12/09 17:36:46 by hiroaki          ###   ########.fr       */
+/*   Updated: 2022/12/10 16:35:17 by hiroaki          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ void	init_s_camera(t_camera *cam, t_matrix *mx)
 
 	width_ratio = SCR_WIDTH / mx->width / 2;
 	height_ratio = SCR_HEIGHT / mx->height / 2;
-	cam->zoom = ft_min(width_ratio, height_ratio) + 2;
+	cam->zoom = ft_min(width_ratio, height_ratio) + 1 + (mx->width < 500);
 	init_axis(cam);
 	cam->x_et = 0;
 	if (mx->depth_max > 50)

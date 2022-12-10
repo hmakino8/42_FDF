@@ -6,20 +6,19 @@
 /*   By: hiroaki <hiroaki@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/10 19:08:02 by hmakino           #+#    #+#             */
-/*   Updated: 2022/12/09 18:33:02 by hiroaki          ###   ########.fr       */
+/*   Updated: 2022/12/10 16:35:49 by hiroaki          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef FDF_H
 # define FDF_H
 
-# include <stdio.h>
-# include <stdbool.h>
 # include <math.h>
-# include "../minilibx-linux/mlx.h"
+# include <stdbool.h>
 # include "libft.h"
 # include "ft_print.h"
 # include "get_next_line.h"
+# include "../minilibx-linux/mlx.h"
 
 /*
  * Output
@@ -109,22 +108,22 @@ typedef struct s_color
 
 typedef struct s_pos
 {
-	long		x;
-	long		y;
-	long		z;
-	t_color		c;
+	long	x;
+	long	y;
+	long	z;
+	t_color	c;
 }	t_pos;
 
 typedef struct s_camera
 {
-	int				zoom;
-	int				x_et;
-	int				y_et;
-	int				projection;
-	double			alpha;
-	double			beta;
-	double			gamma;
-	double			z_div;
+	int		zoom;
+	int		x_et;
+	int		y_et;
+	int		projection;
+	double	alpha;
+	double	beta;
+	double	gamma;
+	double	z_div;
 }	t_camera;
 
 typedef struct s_mlx
@@ -236,7 +235,7 @@ int		ft_min(int a, int b);
 /* check.c */
 int		check_z_axis(t_data *d, int z);
 void	check_argc(t_data *d, int argc);
-void	check_width(t_data *d, t_matrix *mx, int *width);
+void	check_width(t_data *d, t_matrix *mx, int width);
 void	check_delta(t_data *d, t_pos delta);
 void	check_error(t_data *d, int error);
 

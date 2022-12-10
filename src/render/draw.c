@@ -6,7 +6,7 @@
 /*   By: hiroaki <hiroaki@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/17 02:08:05 by hiroaki           #+#    #+#             */
-/*   Updated: 2022/12/02 22:30:38 by hiroaki          ###   ########.fr       */
+/*   Updated: 2022/12/10 16:10:56 by hiroaki          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,18 @@ void	draw_line(t_data *d, t_pos p)
 	}
 }
 
+static t_pos	color_transparency(t_pos cur)
+{
+	double	a;
+
+	a = 0.4;
+	cur.c.red = (cur.c.color >> 16 & 0xFF) * a;
+	cur.c.green = (cur.c.color >> 8 & 0xFF) * a;
+	cur.c.blue = (cur.c.color & 0xFF) * a;
+	cur.c.color = (cur.c.red << 16 | (cur.c.green << 8) | cur.c.blue);
+	return (cur);
+}
+
 void	draw_colored_line(t_mlx *mlx, t_pos cur)
 {
 	char	*dst;
@@ -40,6 +52,8 @@ void	draw_colored_line(t_mlx *mlx, t_pos cur)
 	{
 		dst = \
 		mlx->data_addr + (cur.x * mlx->bpp / 8) + (cur.y * mlx->size_line);
+		if (cur.x <= MENU_WIDTH)
+			cur = color_transparency(cur);
 		*(unsigned int *)dst = cur.c.color;
 	}
 }

@@ -6,7 +6,7 @@
 /*   By: hiroaki <hiroaki@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/17 02:08:05 by hiroaki           #+#    #+#             */
-/*   Updated: 2022/12/09 17:43:06 by hiroaki          ###   ########.fr       */
+/*   Updated: 2022/12/10 14:33:16 by hiroaki          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,9 @@
 
 static void	get_height(t_data *d, t_matrix *mx, int *signal, int fd)
 {
-	mx->line = get_next_line(fd, signal);
+	mx->gnl = get_next_line(fd, signal);
+	mx->line = ft_strtrim(mx->gnl, "\n ");
+	free(mx->gnl);
 	if (*signal == END_OF_FILE)
 	{
 		free(mx->line);
@@ -22,23 +24,19 @@ static void	get_height(t_data *d, t_matrix *mx, int *signal, int fd)
 		return ;
 	}
 	if (!mx->line)
-		fdf_exit(d, "Failed to read map");
+		fdf_exit(d, "Failed to read map.");
 	mx->height++;
-	free(mx->line);
-	mx->line = NULL;
 }
 
-static void	get_width(t_matrix *mx)
+static void	get_width(t_data *d, t_matrix *mx)
 {
 	int	width;
 
-	ft_split(mx->line, ' ', &width);
+	width = 0;
+	free_all_element((void **)ft_split(mx->line, ' ', &width), width);
 	free(mx->line);
 	mx->line = NULL;
-	if (!mx->width)
-		mx->width = width;
-	else
-		mx->width = ft_max(mx->width, width);
+	check_width(d, mx, width);
 }
 
 static void	get_range(t_data *d, char *filename)
@@ -52,7 +50,7 @@ static void	get_range(t_data *d, char *filename)
 		get_height(d, d->mx, &signal, fd);
 		if (signal == END_OF_FILE)
 			return ;
-		get_width(d->mx);
+		get_width(d, d->mx);
 	}
 	close(fd);
 }
@@ -61,11 +59,10 @@ static void	init_matrix(t_data *d, t_matrix *mx, char *filename)
 {
 	int	i;
 	int	fd;
-	int	width;
+	int	damy;
 	int	signal;
 
 	init_fd(d, &fd, filename);
-	width = 0;
 	i = -1;
 	while (1)
 	{
@@ -74,10 +71,9 @@ static void	init_matrix(t_data *d, t_matrix *mx, char *filename)
 		free(mx->gnl);
 		if (signal == END_OF_FILE)
 			return ;
-		mx->elem = ft_split(mx->line, ' ', &mx->width);
-		check_width(d, mx, &width);
+		mx->elem = ft_split(mx->line, ' ', &damy);
 		if (!mx->elem)
-			fdf_exit(d, "Failed to read map");
+			fdf_exit(d, "Failed to read map.");
 		parse_line(d, mx, ++i);
 		free(mx->line);
 		mx->line = NULL;

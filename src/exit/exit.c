@@ -6,7 +6,7 @@
 /*   By: hiroaki <hiroaki@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/17 02:08:05 by hiroaki           #+#    #+#             */
-/*   Updated: 2022/12/09 17:39:16 by hiroaki          ###   ########.fr       */
+/*   Updated: 2022/12/10 17:18:56 by hiroaki          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,8 @@ void	free_all_array(t_matrix *mx)
 	free(mx->line);
 	free_all_element((void **)mx->coord, mx->alloccnt);
 	free_all_element((void **)mx->color, mx->alloccnt);
+	free_all_element((void **)mx->elem, mx->width);
+	free_all_element((void **)mx->coord_info, mx->coord_infocnt);
 }
 
 void	stop_rendering(t_data *d, char *errmsg)
