@@ -27,3 +27,10 @@ https://user-images.githubusercontent.com/95123726/205271005-b204db6a-e954-417c-
 `fdf`
 ### ・Turn in files
 `*.c`, `*.h`, `Makefile`
+### ・Usage
+```sh
+make
+```
+```sh
+./fdf test_maps/○○.fdf
+```
