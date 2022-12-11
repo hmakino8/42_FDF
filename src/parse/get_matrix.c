@@ -6,7 +6,7 @@
 /*   By: hiroaki <hiroaki@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/17 02:08:05 by hiroaki           #+#    #+#             */
-/*   Updated: 2022/12/10 14:33:16 by hiroaki          ###   ########.fr       */
+/*   Updated: 2022/12/11 10:45:03 by hiroaki          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,8 @@ static void	get_height(t_data *d, t_matrix *mx, int *signal, int fd)
 	free(mx->gnl);
 	if (*signal == END_OF_FILE)
 	{
+		if (!mx->height)
+			fdf_exit(d, "Invalid map.");
 		free(mx->line);
 		mx->line = NULL;
 		return ;
