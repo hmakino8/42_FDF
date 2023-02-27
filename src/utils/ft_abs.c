@@ -6,11 +6,11 @@
 /*   By: hiroaki <hiroaki@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/17 02:08:05 by hiroaki           #+#    #+#             */
-/*   Updated: 2022/12/05 18:53:48 by hiroaki          ###   ########.fr       */
+/*   Updated: 2023/02/27 20:50:54 by hiroaki          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../include/fdf.h"
+#include "fdf.h"
 
 int	ft_abs(long long a, long long b)
 {

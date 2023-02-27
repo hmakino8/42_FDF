@@ -6,11 +6,11 @@
 /*   By: hiroaki <hiroaki@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/17 02:08:05 by hiroaki           #+#    #+#             */
-/*   Updated: 2022/12/02 20:55:59 by hiroaki          ###   ########.fr       */
+/*   Updated: 2023/02/27 20:51:13 by hiroaki          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../include/fdf.h"
+#include "fdf.h"
 
 int	ft_min(int a, int b)
 {

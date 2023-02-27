@@ -6,11 +6,11 @@
 /*   By: hiroaki <hiroaki@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/17 02:08:05 by hiroaki           #+#    #+#             */
-/*   Updated: 2022/12/11 10:45:03 by hiroaki          ###   ########.fr       */
+/*   Updated: 2023/02/27 20:50:14 by hiroaki          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../include/fdf.h"
+#include "fdf.h"
 
 static void	get_height(t_data *d, t_matrix *mx, int *signal, int fd)
 {
