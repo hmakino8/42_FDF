@@ -6,7 +6,7 @@
 /*   By: hiroaki <hiroaki@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/17 02:08:05 by hiroaki           #+#    #+#             */
-/*   Updated: 2023/02/27 20:49:25 by hiroaki          ###   ########.fr       */
+/*   Updated: 2023/03/02 21:55:10 by hiroaki          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ void	init_axis(t_camera *cam)
 void	init_fd(t_data *d, int *fd, char *filename)
 {
 	*fd = open(filename, O_RDONLY);
-	if (fd <= 0)
+	if (*fd <= 0)
 		fdf_exit(d, "Failed to open file.");
 }
 
